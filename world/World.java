@@ -9,6 +9,34 @@ public class World {
     private Room[] rooms = new Room[0];
     private Item[] items = new Item[0];
 
+    public World(Entity[] entities, Room[] rooms, Item[] items) {
+        this.entities = entities;
+        this.rooms = rooms;
+        this.items = items;
+    }
+
+    // Getters
+    public Entity[] getEntities() {
+        return entities;
+    }
+    public Room[] getRooms() {
+        return rooms;
+    }
+    public Item[] getItems() {
+        return items;
+    }
+    // Setters
+    public void setEntities(Entity[] entities) {
+        this.entities = entities;
+    }
+    public void setRooms(Room[] rooms) {
+        this.rooms = rooms;
+    }
+    public void setItems(Item[] items) {
+        this.items = items;
+    }
+
+    // Methods
     public void addEntity(Entity entity) {
         entities = Arrays.copyOf(entities, entities.length + 1);
         entities[entities.length - 1] = entity;

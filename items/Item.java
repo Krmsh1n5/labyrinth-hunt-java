@@ -19,6 +19,10 @@ public class Item {
     public Point getPosition() { return position; }
     public Room getLocation() { return location; }
     
+    // Setters
+    public void setName(String name) { this.name = name; }
     public void setPosition(Point position) { this.position = position; }
     public void setLocation(Room location) { this.location = location; }
+
+    // Methods
 }

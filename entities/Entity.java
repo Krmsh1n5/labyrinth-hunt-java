@@ -24,7 +24,23 @@ public abstract class Entity {
     public abstract void die();
     public abstract void attack();
 
-    // Inventory management
+    // Getters
+    public String getName() { return name; }
+    public int getHealth() { return health; }
+    public Object[] getInventory() { return inventory; }
+    public Point getPosition() { return position; }
+    public Room getLocation() { return location; }
+    public int getStrength() { return strength; }
+    
+    // Setters
+    public void setName(String name) { this.name = name; }
+    public void setHealth(int health) { this.health = health; }
+    public void setInventory(Object[] inventory) { this.inventory = inventory; }
+    public void setPosition(Point position) { this.position = position; }
+    public void setLocation(Room location) { this.location = location; }
+    public void setStrength(int strength) { this.strength = strength; }
+
+    // Methods
     public void addToInventory(Object item) {
         Object[] newInventory = new Object[inventory.length + 1];
         System.arraycopy(inventory, 0, newInventory, 0, inventory.length);
@@ -36,10 +52,4 @@ public abstract class Entity {
         // Implementation left for exercise
     }
 
-    // Getters/Setters
-    public String getName() { return name; }
-    public int getHealth() { return health; }
-    public int getStrength() { return strength; }
-    public Object[] getInventory() { return inventory; }
-    // ... other getters/setters
 }

@@ -12,9 +12,13 @@ public class Crowbar extends Item {
         this.pryStrength = pryStrength;
     }
 
+    // Getters
+    public int getPryStrength() { return pryStrength; }
+    // Setters
+    public void setPryStrength(int pryStrength) { this.pryStrength = pryStrength; }
+
+    // Methods
     public boolean canBreakDoor(Door door) {
         return pryStrength > door.getStrength();
     }
-
-    public int getPryStrength() { return pryStrength; }
 }

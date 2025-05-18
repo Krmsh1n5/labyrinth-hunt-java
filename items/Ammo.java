@@ -20,7 +20,8 @@ public class Ammo extends Item {
     // Setters
     public void setWeaponType(String weaponType) { this.weaponType = weaponType; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
-    
+
+    // Methods
     public void useAmmo(int amount) {
         quantity = Math.max(0, quantity - amount);
     }

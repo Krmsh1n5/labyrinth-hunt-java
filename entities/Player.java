@@ -15,6 +15,16 @@ public class Player extends Entity {
         super(name, health, inventory, position, location, strength);
     }
 
+    // Getters
+    public Weapon getCurrentWeapon() {
+        return currentWeapon;
+    }
+    // Setters
+    public void setCurrentWeapon(Weapon currentWeapon) {
+        this.currentWeapon = currentWeapon;
+    }
+
+    // Methods
     @Override
     public void die() {
         System.out.println("Player died!");
@@ -27,16 +37,6 @@ public class Player extends Entity {
         } else {
             System.out.println("Player attacking with bare hands");
         }
-    }
-
-    public void unlock(Door door, Key key) {
-        if(Arrays.asList(getInventory()).contains(key)) {
-            door.unlock(key);
-        }
-    }
-
-    public Object[] getInventory() {
-        return super.getInventory();
     }
 
     public void move() { /* Implementation */ }
