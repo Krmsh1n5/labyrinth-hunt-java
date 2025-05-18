@@ -1,7 +1,8 @@
 package world;
 
-import item;
-import entities;
+import java.util.Arrays;
+import items.Item;
+import entities.Entity;
 
 public class World {
     private Entity[] entities = new Entity[0];

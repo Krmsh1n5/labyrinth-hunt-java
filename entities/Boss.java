@@ -1,7 +1,7 @@
 package entities;
 
-import util;
-import world;
+import util.Point;
+import world.Room;
 
 public class Boss extends Mob {
     public Boss(String name, int health, Object[] inventory, Point position, Room location, int strength) {

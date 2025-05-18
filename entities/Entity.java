@@ -1,7 +1,8 @@
 package entities;
 
-import util;
-import world;
+import java.util.Arrays;
+import util.Point;
+import world.Room;
 
 public abstract class Entity {
     private String name;

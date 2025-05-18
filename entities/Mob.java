@@ -1,7 +1,7 @@
 package entities;
 
-import util;
-import world;
+import util.Point;
+import world.Room;
 
 public class Mob extends Entity {
     public Mob(String name, int health, Object[] inventory, Point position, Room location, int strength) {

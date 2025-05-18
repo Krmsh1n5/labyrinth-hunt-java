@@ -1,6 +1,7 @@
 package world;
 
-import items;
+import items.Key;
+import items.Crowbar;
 
 public class Door {
     private boolean isLocked;

@@ -1,7 +1,10 @@
 package items;
 
-import util;
-import java.util;
+import java.util.Arrays;
+import util.Activatable;
+import util.Point;
+import items.Item;
+import world.Room;
 
 public class Chest extends Item implements Activatable {
     private Object[] inventory;

@@ -1,7 +1,12 @@
 package entities;
 
-import world;
-import util;
+import java.util.Arrays;
+import world.Room;
+import world.Door;
+import util.Point;
+import items.Weapon;
+import items.Key;
+import items.Chest;
 
 public class Player extends Entity {
     private Weapon currentWeapon;

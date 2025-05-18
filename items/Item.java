@@ -1,7 +1,7 @@
 package items;
 
-import util;
-import world;
+import util.Point;
+import world.Room;
 
 public class Item {
     private String name;

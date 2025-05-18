@@ -1,6 +1,8 @@
 package items;
 
-import world;
+import world.Door;
+import world.Room;
+import util.Point;
 
 public class Key extends Item {
     private Door doorAssociativity;

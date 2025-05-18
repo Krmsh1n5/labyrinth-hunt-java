@@ -1,7 +1,8 @@
 package world;
 
-import entities;
-import util;
+import java.util.Arrays;
+import entities.Entity;
+import util.Activatable;
 
 public class Room {
     private Entity[] entities = new Entity[0];

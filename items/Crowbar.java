@@ -1,6 +1,8 @@
 package items;
 
-import world;
+import world.Room;
+import world.Door;
+import util.Point;
 
 public class Crowbar extends Item {
     private int pryStrength;

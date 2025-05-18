@@ -1,5 +1,8 @@
 package items;
 
+import util.Point;
+import world.Room;
+
 public class Weapon extends Item {
     private int strength;
     private int ammoCapacity;
