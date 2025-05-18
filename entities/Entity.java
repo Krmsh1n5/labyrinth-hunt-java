@@ -39,5 +39,7 @@ public abstract class Entity {
     // Getters/Setters
     public String getName() { return name; }
     public int getHealth() { return health; }
+    public int getStrength() { return strength; }
+    public Object[] getInventory() { return inventory; }
     // ... other getters/setters
 }

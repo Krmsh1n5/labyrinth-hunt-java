@@ -23,7 +23,7 @@ public class Player extends Entity {
     @Override
     public void attack() {
         if(currentWeapon != null) {
-            currentWeapon.use();
+            currentWeapon.shoot();
         } else {
             System.out.println("Player attacking with bare hands");
         }
@@ -33,6 +33,10 @@ public class Player extends Entity {
         if(Arrays.asList(getInventory()).contains(key)) {
             door.unlock(key);
         }
+    }
+
+    public Object[] getInventory() {
+        return super.getInventory();
     }
 
     public void move() { /* Implementation */ }

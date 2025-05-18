@@ -35,4 +35,8 @@ public class Door {
             System.out.println("Door's already opened!");
         }
     }
+
+    public int getStrength() {
+        return strength;
+    }
 }

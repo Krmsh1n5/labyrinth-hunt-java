@@ -11,4 +11,8 @@ public class Boss extends Mob {
     public void heal() {
         System.out.println("Boss healing");
     }
+
+    public Object[] getInventory() {
+        return super.getInventory();
+    }
 }

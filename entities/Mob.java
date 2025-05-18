@@ -21,4 +21,8 @@ public class Mob extends Entity {
     public void execute() {
         System.out.println("Mob executing special attack");
     }
+
+    public Object[] getInventory() {
+        return super.getInventory();
+    }
 }

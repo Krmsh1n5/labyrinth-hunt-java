@@ -32,6 +32,23 @@ public class Chest extends Item implements Activatable {
         inventory[inventory.length - 1] = item;
     }
 
+    // Getters
+    public Object[] getInventory() { return inventory; }
     public boolean isLocked() { return isLocked; }
-    public void setLocked(boolean locked) { isLocked = locked; }
+    public Object getItem(int index) {
+        if (this.inventory.length == 0) {
+            System.out.println("Chest is empty");
+            return null;
+        }
+
+        if (index >= 0 && index < inventory.length) {
+            return inventory[index];
+        } else {
+            System.out.println("Invalid index");
+            return null;
+        }
+    }
+
+    // Setters
+    public void setUnlocked() { isLocked = false; }
 }
