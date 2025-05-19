@@ -3,18 +3,20 @@ package world;
 import java.util.Arrays;
 import java.util.UUID;
 import entities.Entity;
-import util.Activatable;
+import items.Chest;
+import util.Point;
 import util.Pair;
 
 public class Room {
     private final UUID id = UUID.randomUUID();
+    private final Pair<Integer, Integer> size = new Pair<>(5, 8); // <rows, columns>
     private final Door[] doors;
+    private final Chest[] chests;
     private Entity[] entities = new Entity[0];
-    private String outlay;
 
-    public Room(Door[] doors, String outlay, Entity[] entities) {
+    public Room(Pair<Integer, Integer> size, Door[] doors, Chest[] chests, Entity[] entities) {
         this.doors = doors;
-        this.outlay = outlay;
+        this.chests = chests;
         this.entities = entities;
     }
 
@@ -28,18 +30,17 @@ public class Room {
     public Entity[] getEntities() {
         return entities;
     }
-
-    public String getOutlay() {
-        return outlay;
+    public Chest[] getChests() {
+        return chests;
     }
+    public Pair<Integer, Integer> getSize() {
+        return size;
+    }
+
     // Setters
-    public void setEntities(Entity[] entities) {
-        this.entities = entities;
-    }
-
-    public void setOutlay(String outlay) {
-        this.outlay = outlay;
-    }
+    // public void setEntities(Entity[] entities) {
+    //     this.entities = entities;
+    // }
 
     // Methods
     public void addEntity(Entity entity) {

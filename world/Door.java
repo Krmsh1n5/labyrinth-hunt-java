@@ -2,18 +2,21 @@ package world;
 
 import java.util.UUID;
 import util.Pair;
+import util.Point;
 import items.Key;
 import items.Crowbar;
 
 public class Door {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
+    private final Point position;
     private final Pair<Room, Room> rooms;
     private boolean isLocked;
     private boolean isCrowbarAccessible;
 
-    public Door( UUID keyId, Pair<Room, Room> rooms, boolean isLocked, boolean isCrowbarAccessible) {
+    public Door(UUID keyId, Point position, Pair<Room, Room> rooms, boolean isLocked, boolean isCrowbarAccessible) {
         this.keyId = keyId;
+        this.position = position;
         this.rooms = rooms;
         this.isLocked = isLocked;
         this.isCrowbarAccessible = isCrowbarAccessible;
@@ -25,6 +28,9 @@ public class Door {
     }
     public UUID getKeyId() {
         return keyId;
+    }
+    public Point getPosition() {
+        return position;
     }
     public Pair<Room, Room> getRooms() {
         return rooms;
