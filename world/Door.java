@@ -10,13 +10,13 @@ public class Door {
     private final UUID keyId;
     private final Pair<Room, Room> rooms;
     private boolean isLocked;
-    private int strength;
+    private boolean isCrowbarAccessible;
 
-    public Door( UUID keyId, Pair<Room, Room> rooms, boolean isLocked, int strength) {
+    public Door( UUID keyId, Pair<Room, Room> rooms, boolean isLocked, boolean isCrowbarAccessible) {
         this.keyId = keyId;
         this.rooms = rooms;
         this.isLocked = isLocked;
-        this.strength = strength;
+        this.isCrowbarAccessible = isCrowbarAccessible;
     }
 
     // Getters
@@ -32,24 +32,38 @@ public class Door {
     public boolean isLocked() {
         return isLocked;
     }
-    public int getStrength() {
-        return strength;
+    public boolean isCrowbarAccessible() {
+        return isCrowbarAccessible;
     }
     // Setters
-    public void setLocked(boolean locked) {
-        isLocked = locked;
-    }
-    public void setStrength(int strength) {
-        this.strength = strength;
-    }
+    // public void setLocked(boolean locked) {
+    //     isLocked = locked;
+    // }
 
     // Methods
-    public void open() {
-        if(this.isLocked) {
-            this.isLocked = true;
-            System.out.println("Door is locked!");
+    public boolean canBeUnlockedByKey(UUID keyId) {
+        return keyId.equals(keyId);
+    }
+
+    public boolean canBeUnlockedByCrowbar() {
+        return isCrowbarAccessible;
+    }
+
+    public boolean unlockWithKey(UUID keyId) {
+        if (canBeUnlockedByKey(keyId)) {
+            isLocked = false;
+            return true;
         } else {
-            System.out.println("Door's already opened!");
+            return false;
+        }
+    }
+
+    public boolean unlockWithCrowbar() {
+        if (canBeUnlockedByCrowbar()) {
+            this.isLocked = false;
+            return true;
+        } else {
+            return false;
         }
     }
 }

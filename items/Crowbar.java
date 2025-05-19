@@ -5,11 +5,8 @@ import world.Door;
 import util.Point;
 
 public class Crowbar extends Item {
-    private int pryStrength;
-
     public Crowbar(String name, int pryStrength) {
         super(name); 
-        this.pryStrength = pryStrength;
     }
 
     // Getters
@@ -19,8 +16,8 @@ public class Crowbar extends Item {
 
     // Methods
     public boolean breakDoor(Door door) {
-        if (door.getStrength() <= pryStrength) {
-            door.open();
+        if (door.canBeUnlockedByCrowbar()) {
+            door.unlockWithCrowbar();
             return true;
         } else {
             return false;

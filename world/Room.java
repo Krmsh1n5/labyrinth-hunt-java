@@ -10,14 +10,12 @@ public class Room {
     private final UUID id = UUID.randomUUID();
     private final Door[] doors;
     private Entity[] entities = new Entity[0];
-    private Activatable[] activatables = new Activatable[0];
     private String outlay;
 
-    public Room(Door[] doors, String outlay, Entity[] entities, Activatable[] activatables) {
+    public Room(Door[] doors, String outlay, Entity[] entities) {
         this.doors = doors;
         this.outlay = outlay;
         this.entities = entities;
-        this.activatables = activatables;
     }
 
     // Getters
@@ -30,9 +28,7 @@ public class Room {
     public Entity[] getEntities() {
         return entities;
     }
-    public Activatable[] getActivatables() {
-        return activatables;
-    }
+
     public String getOutlay() {
         return outlay;
     }
@@ -40,9 +36,7 @@ public class Room {
     public void setEntities(Entity[] entities) {
         this.entities = entities;
     }
-    public void setActivatables(Activatable[] activatables) {
-        this.activatables = activatables;
-    }
+
     public void setOutlay(String outlay) {
         this.outlay = outlay;
     }
@@ -57,16 +51,5 @@ public class Room {
         entities = Arrays.stream(entities)
                 .filter(e -> !e.equals(entity))
                 .toArray(Entity[]::new);
-    }
-
-    public void addActivatable(Activatable activatable) {
-        activatables = Arrays.copyOf(activatables, activatables.length + 1);
-        activatables[activatables.length - 1] = activatable;
-    }
-
-    public void removeActivatable(Activatable activatable) {
-        activatables = Arrays.stream(activatables)
-                .filter(a -> !a.equals(activatable))
-                .toArray(Activatable[]::new);
     }
 }
