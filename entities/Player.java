@@ -11,7 +11,7 @@ import items.Chest;
 public class Player extends Entity {
     private Weapon currentWeapon;
 
-    public Player(String name, int health, Object[] inventory, Point position, Room location, int strength) {
+    public Player(String name, int health, Item[] inventory, Point position, Room location, int strength) {
         super(name, health, inventory, position, location, strength);
     }
 

@@ -4,7 +4,7 @@ import util.Point;
 import world.Room;
 
 public class Mob extends Entity {
-    public Mob(String name, int health, Object[] inventory, Point position, Room location, int strength) {
+    public Mob(String name, int health, Item[] inventory, Point position, Room location, int strength) {
         super(name, health, inventory, position, location, strength);
     }
 
