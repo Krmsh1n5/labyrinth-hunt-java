@@ -8,19 +8,10 @@ import util.Pair;
 
 public class Key extends Item {
     private final UUID id = UUID.randomUUID();
-    private final UUID targetId;
-
-    public Key(String name, Point position, Room location, UUID targetId) {
-        super(name, position, location);
-        this.targetId = targetId;
-    }
 
     // Getters
     public UUID getId() {
         return id;
-    }
-    public UUID getTargetId() {
-        return targetId;
     }
 
     // Methods

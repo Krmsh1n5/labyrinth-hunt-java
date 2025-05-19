@@ -8,12 +8,12 @@ import util.Pair;
 
 public class Room {
     private final UUID id = UUID.randomUUID();
-    private final UUID[] doors;
+    private final Door[] doors;
     private Entity[] entities = new Entity[0];
     private Activatable[] activatables = new Activatable[0];
     private String outlay;
 
-    public Room(UUID[] doors, String outlay, Entity[] entities, Activatable[] activatables) {
+    public Room(Door[] doors, String outlay, Entity[] entities, Activatable[] activatables) {
         this.doors = doors;
         this.outlay = outlay;
         this.entities = entities;
@@ -24,7 +24,7 @@ public class Room {
     public UUID getId() {
         return id;
     }
-    public UUID[] getDoors() {
+    public Door[] getDoors() {
         return doors;
     }
     public Entity[] getEntities() {

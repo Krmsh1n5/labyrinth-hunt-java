@@ -8,11 +8,11 @@ import items.Crowbar;
 public class Door {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
-    private final Pair<UUID, UUID> rooms;
+    private final Pair<Room, Room> rooms;
     private boolean isLocked;
     private int strength;
 
-    public Door( UUID keyId, Pair<UUID, UUID> rooms, boolean isLocked, int strength) {
+    public Door( UUID keyId, Pair<Door, Door> rooms, boolean isLocked, int strength) {
         this.keyId = keyId;
         this.rooms = rooms;
         this.isLocked = isLocked;
@@ -26,7 +26,7 @@ public class Door {
     public UUID getKeyId() {
         return keyId;
     }
-    public Pair<UUID, UUID> getRooms() {
+    public Pair<Door, Door> getRooms() {
         return rooms;
     }
     public boolean isLocked() {

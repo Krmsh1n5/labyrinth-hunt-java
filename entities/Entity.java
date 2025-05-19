@@ -8,8 +8,8 @@ public abstract class Entity {
     private String name;
     private int health;
     private Object[] inventory;
-    private Point position;
-    private Room location;
+    protected Point position;
+    protected Room location;
     private int strength;
 
     public Entity(String name, int health, Object[] inventory, Point position, Room location, int strength) {
@@ -50,6 +50,13 @@ public abstract class Entity {
 
     public void removeFromInventory(Object item) {
         // Implementation left for exercise
+    }
+
+    public void reduceHealth(int damage) {
+        health -= damage;
+        if (health <= 0) {
+            die();
+        }
     }
 
 }
