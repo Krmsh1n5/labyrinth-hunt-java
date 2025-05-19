@@ -40,7 +40,28 @@ public class Player extends Entity {
         }
     }
 
-    public void move() {}
+    public boolean move(char direction, int xMatrix, int yMatrix) {
+        Point current = getPosition();
+        int newX = current.getX();
+        int newY = current.getY();
+
+        switch(Character.toLowerCase(direction)) {
+            case 'a': newX--; break;
+            case 'd': newX++; break;
+            case 'w': newY--; break;
+            case 's': newY++; break;
+            default: return false; // Invalid direction
+        }
+
+        // Check boundaries (assuming 2x2 grid)
+        if(newX >= 1 && newX < (xMatrix-1) && newY >= 1 && newY < (yMatrix-1)) {
+            current.setX(newX);
+            current.setY(newY);
+            return true;
+        }
+        return false;
+    }
+
     public void heal() { /* Implementation */ }
     public void open(Chest chest) { /* Implementation */ }
     public void chooseWeapon(Weapon weapon) { 
