@@ -7,18 +7,23 @@ import util.Point;
 public class Crowbar extends Item {
     private int pryStrength;
 
-    public Crowbar(String name, Point position, Room location, int pryStrength) {
-        super(name, position, location);
+    public Crowbar(String name, int pryStrength) {
+        super(name); 
         this.pryStrength = pryStrength;
     }
 
     // Getters
-    public int getPryStrength() { return pryStrength; }
+    // public int getPryStrength() { return pryStrength; }
     // Setters
-    public void setPryStrength(int pryStrength) { this.pryStrength = pryStrength; }
+    // public void setPryStrength(int pryStrength) { this.pryStrength = pryStrength; }
 
     // Methods
-    public boolean canBreakDoor(Door door) {
-        return pryStrength > door.getStrength();
+    public boolean breakDoor(Door door) {
+        if (door.getStrength() <= pryStrength) {
+            door.open();
+            return true;
+        } else {
+            return false;
+        }
     }
 }

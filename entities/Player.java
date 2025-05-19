@@ -40,7 +40,7 @@ public class Player extends Entity {
         }
     }
 
-    public void move() { /* Implementation */ }
+    public void move() {}
     public void heal() { /* Implementation */ }
     public void open(Chest chest) { /* Implementation */ }
     public void chooseWeapon(Weapon weapon) { 

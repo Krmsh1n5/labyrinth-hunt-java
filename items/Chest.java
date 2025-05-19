@@ -7,58 +7,70 @@ import util.Point;
 import items.Item;
 import world.Room;
 
-public class Chest extends Item implements Activatable {
+public class Chest {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
-    private Object[] inventory;
+    private final Point spawnPosition;
+    private final Room spawnLocation;
+    private Item[] inventory;
     private boolean isLocked;
 
-    public Chest(String name, Point position, Room location, UUID keyId, boolean isLocked) {
-        super(name, position, location);
+    public Chest(String name, Point spawnPosition, Room spawnLocation, UUID keyId, boolean isLocked, Item[] inventory) {
         this.keyId = keyId;
+        this.spawnPosition = spawnPosition;
+        this.spawnLocation = spawnLocation;
         this.isLocked = isLocked;
-        this.inventory = new Object[0];
+        this.inventory = inventory;
     }
 
     // Getters
     public UUID getId() { return id; }
     public UUID getKeyId() { return keyId; }
-    public Object[] getInventory() { return inventory; }
+    public Point getPosition() { return spawnPosition; }
+    public Room getLocation() { return spawnLocation; }
+    public Item[] getInventory() { return inventory; }
     public boolean isLocked() { return isLocked; }
-    public Object getItem(int index) {
-        if (this.inventory.length == 0) {
-            System.out.println("Chest is empty");
-            return null;
-        }
 
-        if (index >= 0 && index < inventory.length) {
-            return inventory[index];
-        } else {
-            System.out.println("Invalid index");
-            return null;
-        }
-    }
-
-    // Setters
-    public void setInventory(Object[] inventory) { this.inventory = inventory; }
-    public void setUnlocked() { isLocked = false; }
-    public void setLocked() { isLocked = true; }    
+    // Setters are redundant for Chest class
+    // public void setInventory(Item[] inventory) { this.inventory = inventory; }
+    // public void setUnlocked() { isLocked = false; }
+    // public void setLocked() { isLocked = true; }    
 
     // Methods
-    @Override
-    public void activate() {
-        if(!isLocked) {
-            System.out.println("Opening chest: " + getName());
-            Arrays.stream(inventory).forEach(item -> 
-                System.out.println("Contains: " + item));
+    // @Override
+    // public void activate() {
+    //     if(!isLocked) {
+    //         System.out.println("Opening chest: " + getName());
+    //         Arrays.stream(inventory).forEach(item -> 
+    //             System.out.println("Contains: " + item));
+    //     } else {
+    //         System.out.println("Chest is locked!");
+    //     }
+    // }
+
+    // public void addItem(Item item) {
+    //     inventory = Arrays.copyOf(inventory, inventory.length + 1);
+    //     inventory[inventory.length - 1] = item;
+    // }
+
+    public boolean unlockChest(UUID keyId) {
+        if(this.keyId.equals(keyId)) {
+            this.isLocked = false;
+            return true;
         } else {
-            System.out.println("Chest is locked!");
+            return false;
         }
     }
 
-    public void addItem(Object item) {
-        inventory = Arrays.copyOf(inventory, inventory.length + 1);
-        inventory[inventory.length - 1] = item;
+    public Item[] lootChest() {
+        if(!isLocked) {
+            Item[] lootedItems = Arrays.copyOf(inventory, inventory.length);
+            inventory = new Item[0]; // Empty the chest after looting
+            return lootedItems;
+        } else {
+            System.out.println("Chest is locked!");
+            return new Item[0];
+        }
     }
 
 }

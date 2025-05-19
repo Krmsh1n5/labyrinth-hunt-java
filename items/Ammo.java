@@ -4,11 +4,11 @@ import util.Point;
 import world.Room;
 
 public class Ammo extends Item {
-    private String weaponType;
+    private final String weaponType;
     private int quantity;
 
-    public Ammo(String name, Point position, Room location, String weaponType, int quantity) {
-        super(name, position, location);
+    public Ammo(String name, String weaponType, int quantity) {
+        super(name);
         this.weaponType = weaponType;
         this.quantity = quantity;
     }
@@ -18,7 +18,7 @@ public class Ammo extends Item {
     public int getQuantity() { return quantity; }
 
     // Setters
-    public void setWeaponType(String weaponType) { this.weaponType = weaponType; }
+    // public void setWeaponType(String weaponType) { this.weaponType = weaponType; }
     public void setQuantity(int quantity) { this.quantity = quantity; }
 
     // Methods

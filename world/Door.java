@@ -44,10 +44,6 @@ public class Door {
     }
 
     // Methods
-    public boolean attemptBreak(Crowbar crowbar) {
-        return crowbar.canBreakDoor(this);
-    }
-
     public void open() {
         if(this.isLocked) {
             this.isLocked = true;
