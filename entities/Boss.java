@@ -2,6 +2,7 @@ package entities;
 
 import util.Point;
 import world.Room;
+import items.Item;
 
 public class Boss extends Mob {
     public Boss(String name, int health, Item[] inventory, Point position, Room location, int strength) {

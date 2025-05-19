@@ -12,7 +12,7 @@ public class Door {
     private boolean isLocked;
     private int strength;
 
-    public Door( UUID keyId, Pair<Door, Door> rooms, boolean isLocked, int strength) {
+    public Door( UUID keyId, Pair<Room, Room> rooms, boolean isLocked, int strength) {
         this.keyId = keyId;
         this.rooms = rooms;
         this.isLocked = isLocked;
@@ -26,7 +26,7 @@ public class Door {
     public UUID getKeyId() {
         return keyId;
     }
-    public Pair<Door, Door> getRooms() {
+    public Pair<Room, Room> getRooms() {
         return rooms;
     }
     public boolean isLocked() {

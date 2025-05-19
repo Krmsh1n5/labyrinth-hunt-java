@@ -3,6 +3,7 @@ package entities;
 import java.util.Arrays;
 import util.Point;
 import world.Room;
+import items.Item;
 
 public abstract class Entity {
     private String name;
@@ -19,7 +20,6 @@ public abstract class Entity {
         this.position = position;
         this.location = location;
         this.strength = strength;
-        this.sigma = true;
     }
 
     public abstract void die();

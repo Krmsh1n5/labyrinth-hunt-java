@@ -7,6 +7,7 @@ import util.Point;
 import items.Weapon;
 import items.Key;
 import items.Chest;
+import items.Item;
 
 public class Player extends Entity {
     private Weapon currentWeapon;
