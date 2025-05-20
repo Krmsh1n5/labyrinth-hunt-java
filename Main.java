@@ -12,14 +12,40 @@ import world.Chest;
 import world.Door;
 import world.Room;
 import items.Item;
+import items.Weapon;
+import items.Ammo;
+import items.Bandage;
+import util.FightSequence;
 
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         // --- set up player, mobs, doors, chests, rooms as before ---
-        Player player = new Player("Hero", 100, new Item[10], new Point(3, 4), null, 10);
-        Mob goblin = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
+        Player player = new Player("Hero", 100, new Item[150], new Point(3, 4), null, 10);
+        // Mob goblin = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
+        String firstType = "Pistol";
+        String secondType = "Super Puper Pushka";
+        Bandage bandage = new Bandage("Basic Bandage", 5, 15);
+        Ammo ammo = new Ammo("Pistol Ammo", firstType, 10);
+        Weapon weapon = new Weapon("My Pistol", firstType, 5);
+        Ammo secondAmmo = new Ammo("Super Puper Pushka Ammo", secondType, 30);
+        Weapon superWeapon = new Weapon("My Super Puper Pushka", secondType, 13);
+
+        Item[] inventory = new Item[] {
+            bandage,
+            ammo,
+            weapon,
+            secondAmmo,
+            superWeapon,
+        };
+        player.setInventory(inventory);
+        player.setCurrentWeapon(superWeapon);
+        Mob goblin = new Mob("Goblin", 50, new Item[1], new Point(2, 2), null, 5);
+        Weapon goblinWeapon = new Weapon("New Pistol", "Pistol", 5);
+        goblin.setInventory(new Item[] {
+            goblinWeapon,
+        });
 
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d1ends = (Pair<Integer,Point>[])
@@ -55,82 +81,84 @@ public class Main {
         System.out.println("Use WASD to move, O to open doors, A to attack, Q to quit");
 
         // --- main loop ---
-        String input;
-        String surroundings;
-        do {
-            current.updateEntityPositions();
-            printGrid(current.getGrid());
+        FightSequence fight = new FightSequence(player, goblin);
+        fight.startCombatLoop();
+        // String input;
+        // String surroundings;
+        // do {
+        //     current.updateEntityPositions();
+        //     printGrid(current.getGrid());
 
-            System.out.print("Enter move (W/A/S/D), Open (O), Attack (A), Quit (Q): ");
-            input = scanner.nextLine().trim();
-            if (input.isEmpty()) continue;
+        //     System.out.print("Enter move (W/A/S/D), Open (O), Attack (A), Quit (Q): ");
+        //     input = scanner.nextLine().trim();
+        //     if (input.isEmpty()) continue;
 
-            char dir = Character.toLowerCase(input.charAt(0));
+        //     char dir = Character.toLowerCase(input.charAt(0));
 
-            // 1) Try to move
-            boolean moved = false;
-            if ("wasd".indexOf(dir) >= 0) {
-                moved = player.move(dir, current);
-            }
-            surroundings = player.checkPlayerSurroundings(current);
+        //     // 1) Try to move
+        //     boolean moved = false;
+        //     if ("wasd".indexOf(dir) >= 0) {
+        //         moved = player.move(dir, current);
+        //     }
+        //     surroundings = player.checkPlayerSurroundings(current);
 
-            // 2) If move failed or was not a direction, check other actions
-            if (dir == 'a') {
-                System.out.println("Attacking mob...");
-            }
-            else if (dir == 'o') {
-                boolean doorOpened = false;
-                for (Door door : current.getDoors()) {
-                    Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
-                    Point playerPos = player.getPlayerPosition();
-                    int dx = Math.abs(playerPos.getX() - doorPos.getX());
-                    int dy = Math.abs(playerPos.getY() - doorPos.getY());
+        //     // 2) If move failed or was not a direction, check other actions
+        //     if (dir == 'a') {
+        //         System.out.println("Attacking mob...");
+        //     }
+        //     else if (dir == 'o') {
+        //         boolean doorOpened = false;
+        //         for (Door door : current.getDoors()) {
+        //             Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
+        //             Point playerPos = player.getPlayerPosition();
+        //             int dx = Math.abs(playerPos.getX() - doorPos.getX());
+        //             int dy = Math.abs(playerPos.getY() - doorPos.getY());
 
-                    if (dx <= 1 && dy <= 1) { // Player is near the door
-                        Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
-                        if (otherEnd != null) {
-                            int newRoomNumber = otherEnd.getLeft();
-                            Point newPosition = otherEnd.getRight();
-                            Room newRoom = dungeon.get(newRoomNumber);
+        //             if (dx <= 1 && dy <= 1) { // Player is near the door
+        //                 Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
+        //                 if (otherEnd != null) {
+        //                     int newRoomNumber = otherEnd.getLeft();
+        //                     Point newPosition = otherEnd.getRight();
+        //                     Room newRoom = dungeon.get(newRoomNumber);
 
-                            // Validate new room and position
-                            if (newRoom != null) {
-                                char[][] newGrid = newRoom.getGrid();
-                                if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
-                                    newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
+        //                     // Validate new room and position
+        //                     if (newRoom != null) {
+        //                         char[][] newGrid = newRoom.getGrid();
+        //                         if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
+        //                             newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
                                     
-                                    // Move player to the new room
-                                    player.moveToNewRoom(newRoom, newPosition);
-                                    current = newRoom; // Update current room reference
-                                    System.out.println("Entered room " + newRoomNumber);
-                                    doorOpened = true;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid door position in new room!");
-                                }
-                            } else {
-                                System.out.println("The door leads nowhere!");
-                            }
-                        }
-                    }
-                }
-                if (!doorOpened) System.out.println("No door nearby or couldn't open.");
-            }
-            else if (!moved) {
-                // neither moved nor attacked nor opened
-                System.out.println("Can't move beyond grid boundaries!");
-            }
+        //                             // Move player to the new room
+        //                             player.moveToNewRoom(newRoom, newPosition);
+        //                             current = newRoom; // Update current room reference
+        //                             System.out.println("Entered room " + newRoomNumber);
+        //                             doorOpened = true;
+        //                             break;
+        //                         } else {
+        //                             System.out.println("Invalid door position in new room!");
+        //                         }
+        //                     } else {
+        //                         System.out.println("The door leads nowhere!");
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //         if (!doorOpened) System.out.println("No door nearby or couldn't open.");
+        //     }
+        //     else if (!moved) {
+        //         // neither moved nor attacked nor opened
+        //         System.out.println("Can't move beyond grid boundaries!");
+        //     }
 
-        } while (!input.equalsIgnoreCase("q"));
+        // } while (!input.equalsIgnoreCase("q"));
 
-        scanner.close();
-        System.out.println("Game exited!");
+        // scanner.close();
+        // System.out.println("Game exited!");
     }
 
-    private static void printGrid(char[][] grid) {
-        for (char[] row : grid) {
-            for (char c : row) System.out.print(c + " ");
-            System.out.println();
-        }
-    }
+    // private static void printGrid(char[][] grid) {
+    //     for (char[] row : grid) {
+    //         for (char c : row) System.out.print(c + " ");
+    //         System.out.println();
+    //     }
+    // }
 }

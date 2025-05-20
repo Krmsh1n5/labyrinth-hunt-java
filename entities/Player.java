@@ -398,15 +398,14 @@ public class Player extends Entity {
     }
 
     public Ammo getAmmoFromInventory(String weaponType) {
-        for (Item item : getInventory()) {
+        Item[] inventory = this.getInventory();
+        for (Item item : inventory) {
             if (item instanceof Ammo) {
                 Ammo ammo = (Ammo) item;
                 if (ammo.getWeaponType().equals(weaponType) && !ammo.isEmpty()) {
                     return ammo;
                 }
-                else {
-                    return null;
-                }
+                // Continue searching if the ammo doesn't match or is empty
             }
         }
         return null; // No matching ammo found
