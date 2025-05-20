@@ -62,10 +62,8 @@ public class Main {
         }
         
         Point pos = player.getPlayerPosition();
-        // Place player inside the grid only if inside bounds (avoid ArrayIndexOutOfBounds)
-        if (pos.getY() > 0 && pos.getY() < height - 1 && pos.getX() > 0 && pos.getX() < width - 1) {
-            grid[pos.getY()][pos.getX()] = '@';
-        }
+        grid[pos.getY()][pos.getX()] = '@';
+        
         
         // Print the grid
         for (char[] row : grid) {

@@ -13,6 +13,7 @@ public class Boss extends Mob {
     }
 
     public void heal() {
+        System.out.println("Boss is healing!");
         // Bosses can heal itself
         if (this.getHealth() < 100) {
             this.setHealth(this.getHealth() + 5);
@@ -25,7 +26,7 @@ public class Boss extends Mob {
     @Override
     public void die() {
         // Bosses have a special death message
-        System.out.println(this.getName() + " has been defeated!");
+        System.out.println("Boss has been defeated!");
         this.setHealth(0);
         this.setPosition(new Point(-1, -1));
         this.setLocation(null);
@@ -45,6 +46,5 @@ public class Boss extends Mob {
         }
         
         return this.getStrength() + 10; // Bosses deal more damage;
-        System.out.println("Boss healing");
     }
 }

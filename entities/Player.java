@@ -61,7 +61,6 @@ public class Player extends Entity {
             default: return false; // Invalid direction
         }
 
-        // Check boundaries (assuming 2x2 grid)
         if(newX >= 1 && newX < (xMatrix-1) && newY >= 1 && newY < (yMatrix-1)) {
             current.setX(newX);
             current.setY(newY);
