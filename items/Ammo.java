@@ -24,13 +24,20 @@ public class Ammo extends Item {
     // Methods
     public void useAmmo(int amount) {
         quantity = Math.max(0, quantity - amount);
+        if (quantity == 0) {
+            System.out.println("Out of ammo!");
+        } else {
+            System.out.println("Ammo used. Remaining: " + quantity);
+        }
     }
 
     public void addAmmo(int amount) {
         quantity += amount;
+        System.out.println("Ammo added. Total: " + quantity);
     }
 
     public boolean isEmpty() {
+        System.out.println("No ammo left.");
         return quantity <= 0;
     }
 }

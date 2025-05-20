@@ -20,6 +20,9 @@ public class Weapon extends Item {
     // public void setType(String type) { this.type = type; }
 
     // Methods
-    public void shoot() {
+    public int shoot() {
+        // Implement shooting logic here
+        System.out.println("Shooting with " + getType() + "!");
+        return this.getDamage();
     }
 }

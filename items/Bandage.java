@@ -29,13 +29,20 @@ public class Bandage extends Item {
 
     public void useBandage(int amount){
         quantity = Math.max(0, quantity - amount);
+        if (quantity == 0) {
+            System.out.println("Out of bandages!");
+        } else {
+            System.out.println("Bandage used. Remaining: " + quantity);
+        }
     }   
 
     public void addBandage(int amount){
         quantity += amount;
+        System.out.println("Bandage added. Total: " + quantity);
     }
 
     public boolean isEmpty() {
+        System.out.println("No bandage left.");
         return quantity <= 0;
     }
 }

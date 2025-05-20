@@ -10,7 +10,7 @@ import items.Weapon;
 import items.Key;
 import items.Item;
 import items.Bandage;
-
+import items.Ammo;
 public class Player extends Entity {
     private Weapon currentWeapon; 
     private final int maxHealth = 100;
@@ -152,7 +152,7 @@ public class Player extends Entity {
         bandage.useBandage(1); // Use one bandage
     }
 
-    public void chooseWeapon(Weapon weapon) { 
+    public void changeWeapon(Weapon weapon) { 
         this.currentWeapon = weapon;
     } 
 
@@ -264,18 +264,51 @@ public class Player extends Entity {
 
 
 
+    public void takeDamage(int damage) {
+        int currentHealth = this.getHealth();
+        currentHealth -= damage;
+        this.setHealth(currentHealth);
+        if (currentHealth < 0) {
+            die();
+        }
+    }
+    
     @Override
     public void die() {
-        System.out.println("Player died!");
+        this.setHealth(0);
+        this.setPosition(new Point(-1, -1));
+        this.setLocation(null);
     }
 
     @Override
     public int attack() {
-        if(currentWeapon != null) {
-            currentWeapon.shoot();
-        } else {
-            System.out.println("Player attacking with bare hands");
+    // User gets the option to choose the weapon to attack and we set that weapon as the current weapon
+    // areWeChangingWeapon function should be implemented in the main game loop
+        if(currentWeapon != null) { // Check if the player has a weapon
+            Ammo ammo = this.getAmmoFromInventory(currentWeapon.getType());
+            if (ammo != null) {
+                ammo.useAmmo(1);
+            } else {
+                return 0;
+            }
+            return currentWeapon.shoot();
+        } else { // If no weapon is selected, use the default attack with fists
+            return this.getStrength();
         }
-        return currentWeapon != null ? currentWeapon.getDamage() : 0;
+    }
+
+    public Ammo getAmmoFromInventory(String weaponType) {
+        for (Item item : getInventory()) {
+            if (item instanceof Ammo) {
+                Ammo ammo = (Ammo) item;
+                if (ammo.getWeaponType().equals(weaponType) && !ammo.isEmpty()) {
+                    return ammo;
+                }
+                else {
+                    return null;
+                }
+            }
+        }
+        return null; // No matching ammo found
     }
 }
