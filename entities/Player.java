@@ -71,8 +71,13 @@ public class Player extends Entity {
     }
 
     public void heal(Bandage bandage) {
+        if (bandage.getQuantity() <= 0) {
+            System.out.println("No bandages left!");
+            return;
+        }
         int currentHealth = getHealth();
         int healingAmount = bandage.getHealingAmount();
+        
         if (currentHealth + healingAmount > maxHealth) {
             healingAmount = maxHealth - currentHealth; // Heal only up to max health
         }
