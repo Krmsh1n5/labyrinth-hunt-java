@@ -44,6 +44,10 @@ public class Door {
         return null;
     }
 
+    public Pair<Integer, Point>[] getRoomsAndPositions() {
+        return this.roomsAndPositions;
+    }
+
     public boolean isLocked() {
         return isLocked;
     }

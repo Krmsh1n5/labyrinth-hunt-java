@@ -26,7 +26,7 @@ public class Main {
             new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(2, new Point(4,3)) };
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,1)) };
+            new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,0)) };
 
         Door door1 = new Door(UUID.randomUUID(), d1ends, true, false);
         Door door2 = new Door(UUID.randomUUID(), d2ends, false, true);
@@ -56,6 +56,7 @@ public class Main {
 
         // --- main loop ---
         String input;
+        String surroundings;
         do {
             current.updateEntityPositions();
             printGrid(current.getGrid());
@@ -70,18 +71,50 @@ public class Main {
             boolean moved = false;
             if ("wasd".indexOf(dir) >= 0) {
                 moved = player.move(dir, current);
-                if (moved) {
-                    player.checkPlayerSurroundings(current);
-                    continue;
-                }
             }
+            surroundings = player.checkPlayerSurroundings(current);
 
             // 2) If move failed or was not a direction, check other actions
             if (dir == 'a') {
                 System.out.println("Attacking mob...");
             }
             else if (dir == 'o') {
-                System.out.println("Opening door...");
+                boolean doorOpened = false;
+                for (Door door : current.getDoors()) {
+                    Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
+                    Point playerPos = player.getPlayerPosition();
+                    int dx = Math.abs(playerPos.getX() - doorPos.getX());
+                    int dy = Math.abs(playerPos.getY() - doorPos.getY());
+
+                    if (dx <= 1 && dy <= 1) { // Player is near the door
+                        Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
+                        if (otherEnd != null) {
+                            int newRoomNumber = otherEnd.getLeft();
+                            Point newPosition = otherEnd.getRight();
+                            Room newRoom = dungeon.get(newRoomNumber);
+
+                            // Validate new room and position
+                            if (newRoom != null) {
+                                char[][] newGrid = newRoom.getGrid();
+                                if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
+                                    newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
+                                    
+                                    // Move player to the new room
+                                    player.moveToNewRoom(newRoom, newPosition);
+                                    current = newRoom; // Update current room reference
+                                    System.out.println("Entered room " + newRoomNumber);
+                                    doorOpened = true;
+                                    break;
+                                } else {
+                                    System.out.println("Invalid door position in new room!");
+                                }
+                            } else {
+                                System.out.println("The door leads nowhere!");
+                            }
+                        }
+                    }
+                }
+                if (!doorOpened) System.out.println("No door nearby or couldn't open.");
             }
             else if (!moved) {
                 // neither moved nor attacked nor opened

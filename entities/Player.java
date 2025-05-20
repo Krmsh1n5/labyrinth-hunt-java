@@ -5,6 +5,7 @@ import java.util.UUID;
 import world.Room;
 import world.Chest;
 import world.Door;
+import util.Pair;
 import util.Point;
 import items.Weapon;
 import items.Key;
@@ -46,9 +47,11 @@ public class Player extends Entity {
         return maxHealth;
     }
 
-    public void checkPlayerSurroundings(Room room) {
+    public String checkPlayerSurroundings(Room room) {
         // Check for nearby chests
         Point playerPos = getPosition();
+        StringBuilder interactables = new StringBuilder();
+
         boolean chestNearby = false;
         boolean mobNearby = false;
         boolean doorNearby = false;
@@ -60,6 +63,7 @@ public class Player extends Entity {
 
             // Check if chest is within 1 cell (3x3 area around player)
             if (dx <= 1 && dy <= 1) {
+                interactables.append("c");
                 chestNearby = true;
                 break;
             }
@@ -72,6 +76,7 @@ public class Player extends Entity {
                 int dx = Math.abs(playerPos.getX() - mobPos.getX());
                 int dy = Math.abs(playerPos.getY() - mobPos.getY());
                 if (dx <= 1 && dy <= 1) {
+                    interactables.append("m");
                     mobNearby = true;
                     break;
                 }
@@ -83,6 +88,7 @@ public class Player extends Entity {
             int dx = Math.abs(playerPos.getX() - doorPos.getX());
             int dy = Math.abs(playerPos.getY() - doorPos.getY());
             if (dx <= 1 && dy <= 1) {
+                interactables.append("d");
                 doorNearby = true;
                 break;
             }
@@ -91,6 +97,8 @@ public class Player extends Entity {
         if(doorNearby) System.out.println("There is a door nearby! Press 'O' to open.");
         if (chestNearby) System.out.println("There is a chest nearby! Press 'L' to loot.");
         if (mobNearby) System.out.println("There is a mob nearby! Press 'A' to attack.");
+
+        return interactables.toString();
     }
 
     // Methods
@@ -223,10 +231,36 @@ public class Player extends Entity {
     } 
 
 
+    // In Player.java
+    public Pair<Integer, Point> interactWithDoor(Door door, Room currentRoom) {
+        if (this.open(door)) { // Check if the player can open the door
+            // Find the door's endpoint that isn't the current room
+            for (Pair<Integer, Point> end : door.getRoomsAndPositions()) {
+                if (end.getLeft() != currentRoom.getRoomNumber()) {
+                    return end; // Return the connected room's ID and position
+                }
+            }
+        }
+        return null; // Door couldn't be opened or no valid endpoint
+    }
 
 
+    // In Player.java
+    public void moveToNewRoom(Room newRoom, Point newPosition) {
+        // Remove from old room
+        Room currentLocation = this.getLocation();
+        if (currentLocation != null) {
+            currentLocation.removeEntity(this);
+        }
 
+        // Update player's state
+        this.setPlayerLocation(newRoom);
+        this.getPosition().setX(newPosition.getX());
+        this.getPosition().setY(newPosition.getY());
 
+        // Add to new room
+        newRoom.addEntity(this);
+    }
 
 
 
