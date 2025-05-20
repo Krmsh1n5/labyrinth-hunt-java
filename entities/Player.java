@@ -95,9 +95,10 @@ public class Player extends Entity {
         if(door.isLocked()) {
             UUID key = findKeyForDoor(door);
             if(key != null) {
-                door.unlockWithKey(key);
+                door.activate(key);
                 return true;
             } else if(door.canBeUnlockedByCrowbar()) {
+                door.activate(null);
                 return true;
             } else {
                 return false;
@@ -111,7 +112,7 @@ public class Player extends Entity {
         if(chest.isLocked()) {
             UUID key = findKeyForChest(chest);
             if(key != null) {
-                chest.unlockChest(key);
+                chest.activate(key);
                 return true;
             } else {
                 return false;
@@ -137,7 +138,7 @@ public class Player extends Entity {
         for(Item item : getInventory()) {
             if(item instanceof Key) {
                 Key key = (Key) item;
-                if(key.getId().equals(door.getKeyId())) {
+                if(door.canBeUnlockedByKey(key.getId())) {
                     return key.getId();
                 }
             }

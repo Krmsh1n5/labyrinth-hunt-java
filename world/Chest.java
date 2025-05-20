@@ -5,8 +5,9 @@ import java.util.UUID;
 import items.Item;
 import util.Activatable;
 import util.Point;
+import util.Activatable;
 
-public class Chest {
+public class Chest implements Activatable{
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
     private final Point spawnPosition;
@@ -36,21 +37,10 @@ public class Chest {
     // public void setLocked() { isLocked = true; }    
 
     // Methods
-    // @Override
-    // public void activate() {
-    //     if(!isLocked) {
-    //         System.out.println("Opening chest: " + getName());
-    //         Arrays.stream(inventory).forEach(item -> 
-    //             System.out.println("Contains: " + item));
-    //     } else {
-    //         System.out.println("Chest is locked!");
-    //     }
-    // }
-
-    // public void addItem(Item item) {
-    //     inventory = Arrays.copyOf(inventory, inventory.length + 1);
-    //     inventory[inventory.length - 1] = item;
-    // }
+    @Override
+    public void activate(UUID keyId) {
+        this.unlockChest(keyId);
+    }
 
     public boolean unlockChest(UUID keyId) {
         if(this.keyId.equals(keyId)) {
