@@ -2,6 +2,7 @@
 import java.util.Arrays;
 import java.util.Scanner;
 import entities.Player;
+import entities.Entity;
 import util.Point;
 import items.Item;
 
@@ -60,7 +61,7 @@ public class Main {
             }
         }
         
-        Point pos = player.getPosition();
+        Point pos = player.getPlayerPosition();
         // Place player inside the grid only if inside bounds (avoid ArrayIndexOutOfBounds)
         if (pos.getY() > 0 && pos.getY() < height - 1 && pos.getX() > 0 && pos.getX() < width - 1) {
             grid[pos.getY()][pos.getX()] = '@';

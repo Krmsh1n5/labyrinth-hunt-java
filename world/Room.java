@@ -3,7 +3,6 @@ package world;
 import java.util.Arrays;
 import java.util.UUID;
 import entities.Entity;
-import items.Chest;
 import util.Point;
 import util.Pair;
 

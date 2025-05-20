@@ -30,4 +30,6 @@ public class Bandage extends Item {
     public void useBandage(int amount){
         quantity = Math.max(0, quantity - amount);
     }   
+
+    
 }

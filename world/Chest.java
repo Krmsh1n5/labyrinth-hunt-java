@@ -1,11 +1,10 @@
-package items;
+package world;
 
 import java.util.Arrays;
 import java.util.UUID;
+import items.Item;
 import util.Activatable;
 import util.Point;
-import items.Item;
-import world.Room;
 
 public class Chest {
     private final UUID id = UUID.randomUUID();

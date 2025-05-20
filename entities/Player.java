@@ -2,11 +2,11 @@ package entities;
 
 import java.util.Arrays;
 import world.Room;
+import world.Chest;
 import world.Door;
 import util.Point;
 import items.Weapon;
 import items.Key;
-import items.Chest;
 import items.Item;
 
 public class Player extends Entity {
@@ -23,6 +23,10 @@ public class Player extends Entity {
     // Setters
     public void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
+    }
+
+    public Point getPlayerPosition() {
+        return getPosition();
     }
 
     // Methods

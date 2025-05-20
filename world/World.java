@@ -2,7 +2,6 @@ package world;
 
 import java.util.Arrays;
 import items.Item;
-import items.Chest;
 import entities.Entity;
 
 public class World {
