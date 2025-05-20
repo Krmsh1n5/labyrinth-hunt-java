@@ -6,7 +6,7 @@ import items.Item;
 import util.Activatable;
 import util.Point;
 
-public class Chest {
+public class Chest implements Activatable {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
     private Point spawnPosition;
@@ -37,6 +37,16 @@ public class Chest {
     public void setInventory(Item[] inventory) { this.inventory = inventory; }
     // public void setUnlocked() { isLocked = false; }
     // public void setLocked() { isLocked = true; }    
+
+    void activate() {
+        if(!isLocked) {
+            System.out.println("Opening chest: " + getId());
+            Arrays.stream(inventory).forEach(item -> 
+                System.out.println("Contains: " + item));
+        } else {
+            System.out.println("Chest is locked!");
+        }
+    }
 
     // Methods
     // @Override

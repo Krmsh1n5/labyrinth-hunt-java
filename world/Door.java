@@ -6,7 +6,7 @@ import util.Point;
 import items.Key;
 import items.Crowbar;
 
-public class Door {
+public class Door implements Activatable {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
     private final Pair<Integer, Point>[] roomsAndPositions;
@@ -33,6 +33,14 @@ public class Door {
             roomNumbers[i] = roomsAndPositions[i].getLeft(); // Extract room number (Integer)
         }
         return roomNumbers;
+    }
+
+    public void activate(UUID keyId) {
+        if (canBeUnlockedByKey(keyId)) {
+            unlockWithKey(keyId);
+        } else if (canBeUnlockedByCrowbar()) {
+            unlockWithCrowbar();
+        }
     }
 
     public Point getPositionByRoomNumber(Integer roomNumber) {

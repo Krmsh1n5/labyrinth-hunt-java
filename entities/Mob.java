@@ -11,11 +11,11 @@ public class Mob extends Entity {
         super(name, health, inventory, position, location, strength);
     }
 
-    protected boolean isLootable() {
+    public boolean isLootable() {
         return isLootable;
     }
 
-    protected void setLootable(boolean isLootable) {
+    public void setLootable(boolean isLootable) {
         this.isLootable = isLootable;
     }
 

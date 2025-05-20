@@ -2,6 +2,7 @@ package util;
 
 import java.util.Scanner;
 import entities.Mob;
+import entities.Boss;
 import entities.Player;
 import items.Weapon;
 import items.Item;
@@ -12,10 +13,12 @@ public class FightSequence {
     private static Scanner scanner = new Scanner(System.in);
     private static Mob targetMob;
     private static Player player;
+    private static int turnCounter = 0;
 
     public FightSequence(Player currentPlayer, Mob currentMob) {
         FightSequence.player = currentPlayer;
         FightSequence.targetMob = currentMob;
+        FightSequence.turnCounter = 0;
     }
 
     // Uncomment for testing
@@ -39,12 +42,30 @@ public class FightSequence {
     // }
 
     public static void startCombatLoop() {
+        // Special intro for boss fights
+        if (targetMob instanceof Boss) {
+            System.out.println("\n▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+            System.out.println("       BOSS FIGHT: " + targetMob.getName().toUpperCase());
+            System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+            System.out.println("Prepare yourself! This enemy is much stronger than regular mobs!");
+            System.out.println("Boss stats: Health: " + targetMob.getHealth() + " | Strength: " + 
+                               targetMob.getStrength() + " | Special: Can heal itself");
+        }
+        
         while(player.getHealth() > 0 && targetMob.getHealth() > 0) {
             printCombatStatus();
             handlePlayerTurn();
             
             if(targetMob.getHealth() > 0) {
                 handleMobAttack();
+                
+                // Check if boss is using its special ability
+                if (targetMob instanceof Boss) {
+                    Boss boss = (Boss) targetMob;
+                    if (boss.isDead()) {
+                        break; // Boss is defeated, exit combat loop
+                    }
+                }
             }
         }
         concludeFight();
@@ -57,7 +78,13 @@ public class FightSequence {
 
         System.out.println("\n=== Combat Status ===");
         System.out.println("Your Health: " + player.getHealth());
-        System.out.println("Mob Health: " + targetMob.getHealth());
+        System.out.println("Mob Health: " + targetMob.getHealth()); 
+        
+        // Display special indicator if fighting a boss
+        if(targetMob instanceof Boss) {
+            System.out.println("⚠ BOSS FIGHT: " + targetMob.getName() + " ⚠");
+        }
+        
         System.out.println("Current Weapon: " + currentWeapon.getName() + 
                          " (Ammo: " + (currentAmmo != null ? currentAmmo.getQuantity() : 0) + ")");
         System.out.println("Bandages: " + (currentBandage != null ? currentBandage.getQuantity() : 0));
@@ -67,6 +94,11 @@ public class FightSequence {
         System.out.println("\nChoose action:");
         System.out.println("A. Attack");
         System.out.println("H. Heal");
+        
+        // If fighting a boss, show additional information
+        if (targetMob instanceof Boss) {
+            System.out.println("\nBoss Info: Bosses can heal themselves and deal more damage!");
+        }
         
         String choice = scanner.nextLine().toUpperCase();
         
@@ -200,6 +232,13 @@ public class FightSequence {
         int damage = currentWeapon.shoot();
         currentAmmo.useAmmo(1);
         
+        // Apply special damage modifiers for boss encounters
+        if (targetMob instanceof Boss) {
+            // Bosses take 10% less damage as they're tougher
+            damage = (int) Math.floor(damage * 0.9);
+            System.out.println("Boss resists some of the damage!");
+        }
+        
         targetMob.takeDamage(damage);
         System.out.println("You dealt " + damage + " damage!");
         
@@ -223,8 +262,25 @@ public class FightSequence {
 
     private static void handleMobAttack() {
         int damage = targetMob.attack();
+        
+        // Special message for boss healing
+        if(targetMob instanceof Boss) {
+            Boss boss = (Boss) targetMob;
+            // Check if boss is about to heal (Boss healing happens inside attack() method)
+            // We just provide additional feedback here
+            if(boss.getHealth() > targetMob.getHealth()) {
+                System.out.println("\n" + boss.getName() + " is preparing a powerful attack!");
+            }
+        }
+        
         player.takeDamage(damage);
-        System.out.println("\nMob attacks! You take " + damage + " damage!");
+        
+        // Different messages for boss vs. regular mob
+        if(targetMob instanceof Boss) {
+            System.out.println("\n" + targetMob.getName() + " unleashes a powerful attack! You take " + damage + " damage!");
+        } else {
+            System.out.println("\nMob attacks! You take " + damage + " damage!");
+        }
     }
 
     private static void concludeFight() {
@@ -232,7 +288,14 @@ public class FightSequence {
             System.out.println("You have been defeated!");
             player.die();
         } else {
-            System.out.println("You have defeated the mob!");
+            // Different victory messages based on mob type
+            if (targetMob instanceof Boss) {
+                System.out.println("VICTORY! You have defeated the boss " + targetMob.getName() + "!");
+                System.out.println("This is a significant achievement that will be remembered!");
+            } else {
+                System.out.println("You have defeated the mob!");
+            }
+            
             System.out.println("Looting the mob...");
             Item[] loot = targetMob.getInventory();
             
@@ -240,7 +303,12 @@ public class FightSequence {
                 player.loot(targetMob);
                 for(Item item : loot) {
                     if(item != null) {
-                        System.out.println("Looted: " + item.getName());
+                        // Special message for boss loot
+                        if (targetMob instanceof Boss) {
+                            System.out.println("Looted rare item: " + item.getName() + "!");
+                        } else {
+                            System.out.println("Looted: " + item.getName());
+                        }
                     }
                 }
             } else {
@@ -263,7 +331,6 @@ public class FightSequence {
                     }
                 }
             }
-            System.out.println("\n");
             
             targetMob.die();
         }
