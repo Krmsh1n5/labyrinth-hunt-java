@@ -5,7 +5,7 @@ import world.Door;
 import util.Point;
 
 public class Crowbar extends Item {
-    public Crowbar(String name, int pryStrength) {
+    public Crowbar(String name) {
         super(name); 
     }
 

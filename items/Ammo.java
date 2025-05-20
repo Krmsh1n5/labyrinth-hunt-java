@@ -37,7 +37,10 @@ public class Ammo extends Item {
     }
 
     public boolean isEmpty() {
-        System.out.println("No ammo left.");
-        return quantity <= 0;
+        if(quantity <= 0) {
+            System.out.println("No ammo left.");
+            return true;
+        }
+        return false;
     }
 }
