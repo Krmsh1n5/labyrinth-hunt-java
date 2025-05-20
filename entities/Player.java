@@ -8,23 +8,20 @@ import util.Point;
 import items.Weapon;
 import items.Key;
 import items.Item;
-import items.Bandage;
-
 
 public class Player extends Entity {
     private Weapon currentWeapon;
-    private final int maxHealth = 100;
 
     public Player(String name, int health, Item[] inventory, Point position, Room location, int strength) {
         super(name, health, inventory, position, location, strength);
     }
 
     // Getters
-    public Weapon getCurrentWeapon() {
+    protected Weapon getCurrentWeapon() {
         return currentWeapon;
     }
     // Setters
-    public void setCurrentWeapon(Weapon currentWeapon) {
+    protected void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
     }
 
@@ -69,24 +66,88 @@ public class Player extends Entity {
         }
         return false;
     }
-
-    public void heal(Bandage bandage) {
-        if (bandage.getQuantity() <= 0) {
-            System.out.println("No bandages left!");
-            return;
-        }
-        int currentHealth = getHealth();
-        int healingAmount = bandage.getHealingAmount();
+    
+    public void loot(Chest chest) {
+        Item[] items = chest.getItems();
+        Item[] playerInventory = getInventory();
+        int newSize = playerInventory.length + items.length;
+        Item[] newInventory = Arrays.copyOf(playerInventory, newSize);
         
-        if (currentHealth + healingAmount > maxHealth) {
-            healingAmount = maxHealth - currentHealth; // Heal only up to max health
-        }
-        currentHealth += healingAmount;
-        setHealth(currentHealth);
-        bandage.useBandage(1); // Use one bandage
+        System.arraycopy(items, 0, newInventory, playerInventory.length, items.length);
+        setInventory(newInventory);
+        
+        // Clear the chest after looting
+        chest.setItems(new Item[0]);
     }
 
-    public void open(Chest chest) { /* Implementation */ }
+    public void loot(Mob mob) {
+        Item[] items = mob.lootMob();
+        Item[] playerInventory = getInventory();
+        int newSize = playerInventory.length + items.length;
+        Item[] newInventory = Arrays.copyOf(playerInventory, newSize);
+        
+        System.arraycopy(items, 0, newInventory, playerInventory.length, items.length);
+        setInventory(newInventory);
+
+        // Clear the mob's inventory after looting
+        mob.setInventory(new Item[0]);
+    }
+
+    public boolean open(Door door) {
+        if(door.isLocked()) {
+            UUID key = findKeyForDoor(door);
+            if(key != null) {
+                door.unlockWithKey(key);
+                return true;
+            } else if(door.canBeUnlockedByCrowbar()) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true
+        }
+    }
+
+    public boolean open(Chest chest) {
+        if(chest.isLocked()) {
+            UUID key = findKeyForChest(chest);
+            if(key != null) {
+                chest.unlock(key);
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    private UUID findKeyForChest(Chest chest) {
+        for(Item item : getInventory()) {
+            if(item instanceof Key) {
+                Key key = (Key) item;
+                if(key.getId().equals(chest.getKeyId())) {
+                    return key.getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    private UUID findKeyForDoor(Door door) {
+        for(Item item : getInventory()) {
+            if(item instanceof Key) {
+                Key key = (Key) item;
+                if(key.getId().equals(door.getKeyId())) {
+                    return key.getId();
+                }
+            }
+        }
+        return null;
+    }
+
+    public void heal() { /* Implementation */ }
     public void chooseWeapon(Weapon weapon) { 
         this.currentWeapon = weapon;
     } 

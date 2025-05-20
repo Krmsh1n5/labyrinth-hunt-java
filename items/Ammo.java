@@ -25,4 +25,12 @@ public class Ammo extends Item {
     public void useAmmo(int amount) {
         quantity = Math.max(0, quantity - amount);
     }
+
+    public void addAmmo(int amount) {
+        quantity += amount;
+    }
+
+    public boolean isEmpty() {
+        return quantity <= 0;
+    }
 }

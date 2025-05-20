@@ -31,5 +31,11 @@ public class Bandage extends Item {
         quantity = Math.max(0, quantity - amount);
     }   
 
-    
+    public void addBandage(int amount){
+        quantity += amount;
+    }
+
+    public boolean isEmpty() {
+        return quantity <= 0;
+    }
 }

@@ -7,19 +7,24 @@ import util.Point;
 import util.Pair;
 
 public class Room {
+    private final int roomNumber;
     private final UUID id = UUID.randomUUID();
     private final Pair<Integer, Integer> size = new Pair<>(5, 8); // <rows, columns>
     private final Door[] doors;
     private final Chest[] chests;
     private Entity[] entities = new Entity[0];
 
-    public Room(Pair<Integer, Integer> size, Door[] doors, Chest[] chests, Entity[] entities) {
+    public Room(int roomNumber, Pair<Integer, Integer> size, Door[] doors, Chest[] chests, Entity[] entities) {
+        this.roomNumber = roomNumber;
         this.doors = doors;
         this.chests = chests;
         this.entities = entities;
     }
 
     // Getters
+    public int getRoomNumber() {
+        return roomNumber;
+    }
     public UUID getId() {
         return id;
     }
