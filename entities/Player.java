@@ -32,8 +32,13 @@ public class Player extends Entity {
         return getPosition();
     }
 
+    @Override
+    public char getSymbol() {
+        return '@'; // or any symbol for Player
+    }
+
     // Methods
-    public boolean move(char direction, int xMatrix, int yMatrix) {
+    public boolean move(char direction, Room room) {
         Point current = getPosition();
         int newX = current.getX();
         int newY = current.getY();
@@ -46,12 +51,18 @@ public class Player extends Entity {
             default: return false; // Invalid direction
         }
 
-        if(newX >= 1 && newX < (xMatrix-1) && newY >= 1 && newY < (yMatrix-1)) {
-            current.setX(newX);
-            current.setY(newY);
-            return true;
+        char[][] grid = room.getGrid();
+        char targetCell = grid[newY][newX];
+
+        if(targetCell != '.') {
+            System.out.println("There is an obstacle in the way!");
+            return false;
         }
-        return false;
+
+        current.setX(newX);
+        current.setY(newY);
+        return true;
+
     }
     
     public void loot(Chest chest) {

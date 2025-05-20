@@ -33,6 +33,11 @@ public class Mob extends Entity {
         return this.getStrength();
     }
 
+    @Override
+    public char getSymbol() {
+        return 'M'; // or any symbol for Mob
+    }
+
     public void takeDamage(int damage) {
         int currentHealth = this.getHealth();
         currentHealth -= damage;

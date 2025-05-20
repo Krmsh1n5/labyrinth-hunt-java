@@ -9,16 +9,69 @@ import util.Pair;
 public class Room {
     private final int roomNumber;
     private final UUID id = UUID.randomUUID();
-    private final Pair<Integer, Integer> size = new Pair<>(5, 8); // <rows, columns>
+    private final Pair<Integer, Integer> size = new Pair<>(6, 9); // <rows, columns>
     private final Door[] doors;
     private final Chest[] chests;
     private Entity[] entities = new Entity[0];
+    private char[][] grid;
 
-    public Room(int roomNumber, Pair<Integer, Integer> size, Door[] doors, Chest[] chests, Entity[] entities) {
+    public Room(int roomNumber, Door[] doors, Chest[] chests, Entity[] entities) {
         this.roomNumber = roomNumber;
         this.doors = doors;
         this.chests = chests;
         this.entities = entities;
+        initializeGrid();
+    }
+
+        private void initializeGrid() {
+        grid = new char[size.getLeft()][size.getRight()];
+        resetGrid(); // Reset to walls, doors, chests
+        updateEntityPositions(); // Add entities
+    }
+
+    private void resetGrid() {
+        int rows = size.getLeft();
+        int cols = size.getRight();
+
+        // Reset walls and floor
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                if (i == 0 || i == rows - 1 || j == 0 || j == cols - 1) {
+                    grid[i][j] = '#'; // Wall
+                } else {
+                    grid[i][j] = '.'; // Floor
+                }
+            }
+        }
+
+        // Re-add doors
+        for (Door door : doors) {
+            Point pos = door.getPosition();
+            if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'D';
+        }
+
+        // Re-add chests
+        for (Chest chest : chests) {
+            Point pos = chest.getPosition();
+            if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'C';
+        }
+    }
+
+    public void updateEntityPositions() {
+        resetGrid(); // Clear old entity positions
+        for (Entity entity : entities) {
+            Point pos = entity.getPosition();
+            if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = entity.getSymbol();
+        }
+    }
+
+    private boolean isInBounds(Point pos) {
+        return pos.getX() >= 0 && pos.getX() < size.getRight() && 
+               pos.getY() >= 0 && pos.getY() < size.getLeft();
+    }
+
+    public char[][] getGrid() {
+        return grid;
     }
 
     // Getters

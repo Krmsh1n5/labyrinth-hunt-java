@@ -24,12 +24,14 @@ public abstract class Entity {
 
     public abstract void die();
     public abstract int attack();
+    public abstract char getSymbol();
+
 
     // Getters
     protected String getName() { return name; }
     protected int getHealth() { return health; }
     protected Item[] getInventory() { return inventory; }
-    protected Point getPosition() { return position; }
+    public Point getPosition() { return position; }
     protected Room getLocation() { return location; }
     protected int getStrength() { return strength; }
     
