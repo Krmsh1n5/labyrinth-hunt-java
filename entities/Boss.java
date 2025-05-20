@@ -45,6 +45,6 @@ public class Boss extends Mob {
             heal();
         }
         
-        return this.getStrength() + 10; // Bosses deal more damage;
+        return this.getStrength() + 5; // Bosses deal more damage;
     }
 }

@@ -1,4 +1,3 @@
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -72,15 +71,15 @@ public class Main {
         orc.setInventory(new Item[] { orcWeapon, orcAmmo });
 
         // Room 3: Two zombies (weaker)
-        Mob zombie1 = new Mob("Zombie", 25, new Item[1], new Point(2, 3), null, 4);
-        Mob zombie2 = new Mob("Undead", 20, new Item[1], new Point(5, 2), null, 4);
+        Mob zombie1 = new Mob("Zombie", 25, new Item[1], new Point(2, 3), null, 7);
+        Mob zombie2 = new Mob("Undead", 20, new Item[1], new Point(5, 2), null, 7);
         zombie1.setInventory(new Item[] { new Bandage("Bloodied Bandage", 2, 10) });
         zombie2.setInventory(new Item[] { keyForDoor2 }); // Zombie2 has the key to Room 4
 
         // Room 4: Final boss (weaker)
         Boss finalBoss = new Boss("Dungeon Lord", 80, new Item[3], new Point(5, 5), null, 12);
-        Weapon bossWeapon = new Weapon("Legendary Shotgun", shotgunType, 20);
-        Ammo bossAmmo = new Ammo("Shotgun Shells", shotgunType, 8);
+        Weapon bossWeapon = new Weapon("Legendary Shotgun", shotgunType, 13);
+        Ammo bossAmmo = new Ammo("Shotgun Shells", shotgunType, 5);
         finalBoss.setInventory(new Item[] { 
             bossWeapon, 
             bossAmmo, 
@@ -104,10 +103,12 @@ public class Main {
         Door door2 = new Door(door2Id, d2ends, true, true); // Can be opened with crowbar
 
         // Door 3: Room 3 to Room 4 (requires Silver Key from zombie)
-        UUID door3Id = UUID.randomUUID();
+        // FIXED: Using proper UUID from the Silver Key
+        // MODIFIED: Changed door position to be more visible on the map (moved from bottom to right side)
+        UUID door3Id = keyForDoor2.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d3ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{ new Pair<>(3, new Point(5, 9)), new Pair<>(4, new Point(5, 0)) };
+            new Pair<?,?>[]{ new Pair<>(3, new Point(9, 5)), new Pair<>(4, new Point(0, 5)) };
         Door door3 = new Door(door3Id, d3ends, true, false); // Can't be opened with crowbar, needs key
 
         // Secret exit door (requires Golden Key from boss)
@@ -121,7 +122,7 @@ public class Main {
         // Room 1: Unlocked chest with basic supplies and Iron Key
         Chest chest1 = new Chest("Wooden Chest", new Point(7, 2), null, UUID.randomUUID(), false, 
             new Item[] { 
-                new Bandage("Extra Bandage", 2, 15),
+                new Bandage("Extra Bandage", 2, 30),
                 new Ammo("Extra Pistol Ammo", pistolType, 8),
                 keyForChest3, // IMPROVED: This chest contains the key for chest3
             });
@@ -134,11 +135,11 @@ public class Main {
             });
 
         // Room 3: Locked chest with shotgun (requires Iron Key from chest1)
-        Chest chest3 = new Chest("Iron Chest", new Point(7, 5), null, keyForChest3.getId(), true,
+        Chest chest3 = new Chest("Iron Chest", new Point(6, 5), null, keyForChest3.getId(), true,
             new Item[] { 
-                new Weapon("Combat Shotgun", shotgunType, 15),
+                new Weapon("Super Puper Gun (Pushka)", shotgunType, 30),
                 new Ammo("Shotgun Shells", shotgunType, 10),
-                new Bandage("Advanced Bandage", 3, 20),
+                new Bandage("Advanced Bandage", 3, 40),
                 keyForDoor3, // IMPROVED: This chest has Golden Key for exit door (alternative to boss fight)
             });
 
@@ -147,12 +148,13 @@ public class Main {
             new Item[] { 
                 new Weapon("Ultimate Weapon", "Ultimate", 30),
                 new Ammo("Ultimate Ammo", "Ultimate", 50),
-                new Bandage("Ultimate Medkit", 5, 50) 
+                new Bandage("Ultimate Medkit", 5, 80) 
             });
 
         // --- Create rooms and populate with entities ---
         Room room1 = new Room(1, new Door[]{door1}, new Chest[]{chest1}, new Entity[]{player, goblin});
         Room room2 = new Room(2, new Door[]{door1, door2}, new Chest[]{chest2}, new Entity[]{orc});
+        // FIXED: Make sure door3 is included in Room 3
         Room room3 = new Room(3, new Door[]{door2, door3}, new Chest[]{chest3}, new Entity[]{zombie1, zombie2});
         Room room4 = new Room(4, new Door[]{door3, exitDoor}, new Chest[]{treasureChest}, new Entity[]{finalBoss});
 
@@ -258,6 +260,8 @@ public class Main {
                         } else if (current.getRoomNumber() == 3) {
                             System.out.println("\n** TIP: There's an Iron Chest here that needs a key.");
                             System.out.println("** Find or defeat the Undead enemy to get the Silver Key to Room 4.");
+                            // ADDED: Door to Room 4 tip
+                            System.out.println("** The door to Room 4 is at the bottom of this room and requires the Silver Key.");
                         }
                     }
                     break;
@@ -676,13 +680,6 @@ public class Main {
         System.out.println("- D: Door");
         System.out.println("- C: Chest");
         System.out.println("- #: Wall");
-        
-        System.out.println("\nGame Tips:");
-        System.out.println("- You already have the Bronze Key to unlock the door to Room 2");
-        System.out.println("- Open the wooden chest in Room 1 to get the Iron Key");
-        System.out.println("- The door to Room 3 can be opened with your crowbar");
-        System.out.println("- Defeat the final boss in Room 4 to escape");
-        System.out.println("- Doors are easier to open in this version");
     }
 
     /**
