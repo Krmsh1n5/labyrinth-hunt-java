@@ -64,7 +64,7 @@ public class Main {
             new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(3, new Point(6,3)) };
         Door door1 = new Door(door1Id, d1ends, true, false);
 
-        UUID door2Id = UUID.randomUUID();
+        UUID door2Id = keyForDoor2.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
             new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,0)) };
