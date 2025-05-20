@@ -8,9 +8,12 @@ import util.Point;
 import items.Weapon;
 import items.Key;
 import items.Item;
+import items.Bandage;
+
 
 public class Player extends Entity {
     private Weapon currentWeapon;
+    private final int maxHealth = 100;
 
     public Player(String name, int health, Item[] inventory, Point position, Room location, int strength) {
         super(name, health, inventory, position, location, strength);
@@ -67,7 +70,17 @@ public class Player extends Entity {
         return false;
     }
 
-    public void heal() { /* Implementation */ }
+    public void heal(Bandage bandage) {
+        int currentHealth = getHealth();
+        int healingAmount = bandage.getHealingAmount();
+        if (currentHealth + healingAmount > maxHealth) {
+            healingAmount = maxHealth - currentHealth; // Heal only up to max health
+        }
+        currentHealth += healingAmount;
+        setHealth(currentHealth);
+        bandage.useBandage(1); // Use one bandage
+    }
+
     public void open(Chest chest) { /* Implementation */ }
     public void chooseWeapon(Weapon weapon) { 
         this.currentWeapon = weapon;
