@@ -1,5 +1,6 @@
 package entities;
 
+import java.util.Arrays;
 import util.Point;
 import world.Room;
 import items.Item;
@@ -9,17 +10,36 @@ public class Mob extends Entity {
         super(name, health, inventory, position, location, strength);
     }
 
+    //Methods
     @Override
     public void die() {
-        System.out.println("Mob died");
+        this.setHealth(0);
+        this.setPosition(new Point(-1, -1));
+        this.setLocation(null);
     }
 
     @Override
-    public void attack() {
-        System.out.println("Mob attacking with strength " + getStrength());
+    public int attack() {
+        return this.getStrength();
     }
 
-    public void execute() {
-        System.out.println("Mob executing special attack");
+    public void takeDamage(int damage) {
+        int currentHealth = this.getHealth();
+        currentHealth -= damage;
+        this.setHealth(currentHealth);
+        if (currentHealth < 0) {
+            die();
+        }
+    }
+
+    public Item[] lootMob() {
+        int currentHealth = this.getHealth();
+        Item[] inventory = this.getInventory();
+        if(currentHealth < 0 && inventory.length > 0) {
+            Item[] lootedItems = Arrays.copyOf(inventory, inventory.length);
+            this.setInventory(new Item[0]);
+            return lootedItems;
+        }
+        return new Item[0];
     }
 }

@@ -9,8 +9,8 @@ public abstract class Entity {
     private String name;
     private int health;
     private Item[] inventory;
-    protected Point position;
-    protected Room location;
+    private Point position;
+    private Room location;
     private int strength;
 
     public Entity(String name, int health, Item[] inventory, Point position, Room location, int strength) {
@@ -23,23 +23,23 @@ public abstract class Entity {
     }
 
     public abstract void die();
-    public abstract void attack();
+    public abstract int attack();
 
     // Getters
-    public String getName() { return name; }
-    public int getHealth() { return health; }
-    public Item[] getInventory() { return inventory; }
-    public Point getPosition() { return position; }
-    public Room getLocation() { return location; }
-    public int getStrength() { return strength; }
+    protected String getName() { return name; }
+    protected int getHealth() { return health; }
+    protected Item[] getInventory() { return inventory; }
+    protected Point getPosition() { return position; }
+    protected Room getLocation() { return location; }
+    protected int getStrength() { return strength; }
     
     // Setters
-    public void setName(String name) { this.name = name; }
-    public void setHealth(int health) { this.health = health; }
-    public void setInventory(Item[] inventory) { this.inventory = inventory; }
-    public void setPosition(Point position) { this.position = position; }
-    public void setLocation(Room location) { this.location = location; }
-    public void setStrength(int strength) { this.strength = strength; }
+    protected void setName(String name) { this.name = name; }
+    protected void setHealth(int health) { this.health = health; }
+    protected void setInventory(Item[] inventory) { this.inventory = inventory; }
+    protected void setPosition(Point position) { this.position = position; }
+    protected void setLocation(Room location) { this.location = location; }
+    protected void setStrength(int strength) { this.strength = strength; }
 
     // Methods
     public void addToInventory(Item item) {
@@ -53,7 +53,7 @@ public abstract class Entity {
         // Implementation left for exercise
     }
 
-    public void reduceHealth(int damage) {
+    public void takeDamage(int damage) {
         health -= damage;
         if (health <= 0) {
             die();

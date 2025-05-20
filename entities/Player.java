@@ -32,12 +32,13 @@ public class Player extends Entity {
     }
 
     @Override
-    public void attack() {
+    public int attack() {
         if(currentWeapon != null) {
             currentWeapon.shoot();
         } else {
             System.out.println("Player attacking with bare hands");
         }
+        return currentWeapon != null ? currentWeapon.getDamage() : 0;
     }
 
     public boolean move(char direction, int xMatrix, int yMatrix) {
