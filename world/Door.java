@@ -10,11 +10,11 @@ public class Door {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
     private final Point position;
-    private final Pair<Room, Room> rooms;
+    private final Pair<Room, Point>[] rooms;
     private boolean isLocked;
     private boolean isCrowbarAccessible;
 
-    public Door(UUID keyId, Point position, Pair<Room, Room> rooms, boolean isLocked, boolean isCrowbarAccessible) {
+    public Door(UUID keyId, Point position, Pair<Room, Point>[] rooms, boolean isLocked, boolean isCrowbarAccessible) {
         this.keyId = keyId;
         this.position = position;
         this.rooms = rooms;
@@ -32,8 +32,16 @@ public class Door {
     public Point getPosition() {
         return position;
     }
-    public Pair<Room, Room> getRooms() {
+    public Pair<Room, Point>[] getRooms() {
         return rooms;
+    }
+    public Point getPositionbyRoom(Room room) {
+        for (Pair<Room, Point> pair : rooms) {
+            if (pair.getFirst().equals(room)) {
+                return pair.getSecond();
+            }
+        }
+        return null;
     }
     public boolean isLocked() {
         return isLocked;
