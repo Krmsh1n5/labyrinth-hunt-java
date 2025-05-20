@@ -9,11 +9,11 @@ import items.Crowbar;
 public class Door {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
-    private final Pair<Room, Point>[] roomsAndPositions;
+    private final Pair<Integer, Point>[] roomsAndPositions;
     private boolean isLocked;
     private boolean isCrowbarAccessible;
 
-    public Door(UUID keyId, Pair<Room, Point>[] roomsAndPositions, boolean isLocked, boolean isCrowbarAccessible) {
+    public Door(UUID keyId, Pair<Integer, Point>[] roomsAndPositions, boolean isLocked, boolean isCrowbarAccessible) {
         this.keyId = keyId;
         this.roomsAndPositions = roomsAndPositions;
         this.isLocked = isLocked;
@@ -27,21 +27,23 @@ public class Door {
     public UUID getKeyId() {
         return keyId;
     }
-    public Room[] getRooms() {
-        Room[] roomArray = new Room[roomsAndPositions.length];
+    public Integer[] getConnectedRoomNumbers() {
+        Integer[] roomNumbers = new Integer[roomsAndPositions.length];
         for (int i = 0; i < roomsAndPositions.length; i++) {
-            roomArray[i] = roomsAndPositions[i].getLeft();
+            roomNumbers[i] = roomsAndPositions[i].getLeft(); // Extract room number (Integer)
         }
-        return roomArray;
+        return roomNumbers;
     }
-    public Point getPositionbyRoom(Room room) {
-        for (Pair<Room, Point> pair : roomsAndPositions) {
-            if (pair.getLeft().equals(room)) {
+
+    public Point getPositionByRoomNumber(Integer roomNumber) {
+        for (Pair<Integer, Point> pair : roomsAndPositions) {
+            if (pair.getLeft().equals(roomNumber)) {
                 return pair.getRight();
             }
         }
         return null;
     }
+
     public boolean isLocked() {
         return isLocked;
     }

@@ -9,7 +9,7 @@ import util.Pair;
 public class Room {
     private final int roomNumber;
     private final UUID id = UUID.randomUUID();
-    private final Pair<Integer, Integer> size = new Pair<>(6, 9); // <rows, columns>
+    private final Pair<Integer, Integer> size = new Pair<>(7, 10); // <rows, columns>
     private final Door[] doors;
     private final Chest[] chests;
     private Entity[] entities = new Entity[0];
@@ -46,7 +46,7 @@ public class Room {
 
         // Re-add doors
         for (Door door : doors) {
-            Point pos = door.getPositionbyRoom(this);
+            Point pos = door.getPositionByRoomNumber(this.roomNumber);
             if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'D';
         }
 

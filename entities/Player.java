@@ -32,6 +32,11 @@ public class Player extends Entity {
         return getPosition();
     }
 
+    
+    public void setPlayerLocation(Room location) {
+        setLocation(location);;
+    }
+
     @Override
     public char getSymbol() {
         return '@'; // or any symbol for Player
@@ -46,6 +51,7 @@ public class Player extends Entity {
         Point playerPos = getPosition();
         boolean chestNearby = false;
         boolean mobNearby = false;
+        boolean doorNearby = false;
 
         for (Chest chest : room.getChests()) {
             Point chestPos = chest.getPosition();
@@ -72,6 +78,17 @@ public class Player extends Entity {
             }
         }
 
+        for (Door door : room.getDoors()) {
+            Point doorPos = door.getPositionByRoomNumber(room.getRoomNumber());
+            int dx = Math.abs(playerPos.getX() - doorPos.getX());
+            int dy = Math.abs(playerPos.getY() - doorPos.getY());
+            if (dx <= 1 && dy <= 1) {
+                doorNearby = true;
+                break;
+            }
+        }
+
+        if(doorNearby) System.out.println("There is a door nearby! Press 'O' to open.");
         if (chestNearby) System.out.println("There is a chest nearby! Press 'L' to loot.");
         if (mobNearby) System.out.println("There is a mob nearby! Press 'A' to attack.");
     }

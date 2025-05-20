@@ -1,4 +1,5 @@
-import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -13,50 +14,81 @@ import world.Room;
 import items.Item;
 
 public class Main {
-
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        String input;
 
-        Player player = new Player("Hero", 100, new Item[10], 
-            new Point(3, 4), null, 10);
+        // --- set up player, mobs, doors, chests, rooms as before ---
+        Player player = new Player("Hero", 100, new Item[10], new Point(3, 4), null, 10);
+        Mob goblin = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
 
-        Mob mob = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
+        @SuppressWarnings("unchecked")
+        Pair<Integer,Point>[] d1ends = (Pair<Integer,Point>[])
+            new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(2, new Point(4,3)) };
+        @SuppressWarnings("unchecked")
+        Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
+            new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,1)) };
 
-        Door[] doors = new Door[] {
-            new Door(UUID.randomUUID(), new Point(1, 1), new Pair<>(null, null), true, false)
-        };
-        Chest[] chests = new Chest[] {
-            new Chest("Treasure", new Point(3, 2), null, UUID.randomUUID(), true, new Item[0])
-        };
+        Door door1 = new Door(UUID.randomUUID(), d1ends, true, false);
+        Door door2 = new Door(UUID.randomUUID(), d2ends, false, true);
 
-        Room room = new Room(1, doors, chests, new Entity[] { player, mob });
-        char[][] grid = room.getGrid();
+        Chest chest1 = new Chest("Gold",   new Point(3,2), null, UUID.randomUUID(), true,  new Item[0]);
+        Chest chest2 = new Chest("Potion", new Point(5,5), null, UUID.randomUUID(), false, new Item[0]);
+
+        Door[] room1Doors   = { door1, door2 };
+        Chest[] room1Chests = { chest1 };
+        Entity[] room1Ents  = { player, goblin };
+
+        Door[] room2Doors   = { door2 };
+        Chest[] room2Chests = { chest2 };
+        Entity[] room2Ents  = { /* more mobs if you like */ };
+
+        Map<Integer,Room> dungeon = new HashMap<>();
+        dungeon.put(1, new Room(1, room1Doors, room1Chests, room1Ents));
+        dungeon.put(2, new Room(2, room2Doors, room2Chests, room2Ents));
+
+        // start in room 1
+        Room current = dungeon.get(1);
+        player.setPlayerLocation(current);
+        current.addEntity(player);
 
         System.out.println("5x8 Grid Player Movement");
-        System.out.println("Use WASD to move, Q to quit");
+        System.out.println("Use WASD to move, O to open doors, A to attack, Q to quit");
 
+        // --- main loop ---
+        String input;
         do {
-            // Update room grid and print
-            room.updateEntityPositions();
-            printGrid(grid);
+            current.updateEntityPositions();
+            printGrid(current.getGrid());
 
-            System.out.print("Enter move (W/A/S/D/Q): ");
+            System.out.print("Enter move (W/A/S/D), Open (O), Attack (A), Quit (Q): ");
             input = scanner.nextLine().trim();
+            if (input.isEmpty()) continue;
 
-            if (input.equalsIgnoreCase("q")) break;
+            char dir = Character.toLowerCase(input.charAt(0));
 
-            if (!input.isEmpty()) {
-                char dir = input.charAt(0);
-                boolean moved = player.move(dir, room);
-                
+            // 1) Try to move
+            boolean moved = false;
+            if ("wasd".indexOf(dir) >= 0) {
+                moved = player.move(dir, current);
                 if (moved) {
-                    player.checkPlayerSurroundings(room); // Show surroundings after moving
-                } else {
-                    System.out.println("Can't move beyond grid boundaries!");
+                    player.checkPlayerSurroundings(current);
+                    continue;
                 }
             }
-        } while (true);
+
+            // 2) If move failed or was not a direction, check other actions
+            if (dir == 'a') {
+                System.out.println("Attacking mob...");
+            }
+            else if (dir == 'o') {
+                System.out.println("Opening door...");
+            }
+            else if (!moved) {
+                // neither moved nor attacked nor opened
+                System.out.println("Can't move beyond grid boundaries!");
+            }
+
+        } while (!input.equalsIgnoreCase("q"));
 
         scanner.close();
         System.out.println("Game exited!");
@@ -64,11 +96,8 @@ public class Main {
 
     private static void printGrid(char[][] grid) {
         for (char[] row : grid) {
-            for (char cell : row) {
-                System.out.print(cell + " ");
-            }
+            for (char c : row) System.out.print(c + " ");
             System.out.println();
         }
     }
-
 }
