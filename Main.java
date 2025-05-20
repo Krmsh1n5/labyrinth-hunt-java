@@ -16,6 +16,8 @@ import items.Weapon;
 import items.Ammo;
 import items.Bandage;
 import util.FightSequence;
+import items.Crowbar;
+import items.Key;
 
 public class Main {
     public static void main(String[] args) {
@@ -31,6 +33,10 @@ public class Main {
         Weapon weapon = new Weapon("My Pistol", firstType, 5);
         Ammo secondAmmo = new Ammo("Super Puper Pushka Ammo", secondType, 30);
         Weapon superWeapon = new Weapon("My Super Puper Pushka", secondType, 13);
+        Crowbar crowbar = new Crowbar("Crowbar");
+
+        Key keyForDoor1 = new Key("Key for Door 1");
+        Key keyForDoor2 = new Key("Key for Door 2");
 
         Item[] inventory = new Item[] {
             bandage,
@@ -38,39 +44,64 @@ public class Main {
             weapon,
             secondAmmo,
             superWeapon,
+            crowbar,
+            keyForDoor1,
+            keyForDoor2
         };
+
         player.setInventory(inventory);
         player.setCurrentWeapon(superWeapon);
+
         Mob goblin = new Mob("Goblin", 50, new Item[1], new Point(2, 2), null, 5);
         Weapon goblinWeapon = new Weapon("New Pistol", "Pistol", 5);
         goblin.setInventory(new Item[] {
             goblinWeapon,
         });
 
+        UUID door1Id = UUID.randomUUID();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d1ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(2, new Point(4,3)) };
+            new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(3, new Point(6,3)) };
+        Door door1 = new Door(door1Id, d1ends, true, false);
+
+        UUID door2Id = UUID.randomUUID();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
             new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,0)) };
+        Door door2 = new Door(door2Id, d2ends, true, false);
 
-        Door door1 = new Door(UUID.randomUUID(), d1ends, true, false);
-        Door door2 = new Door(UUID.randomUUID(), d2ends, false, true);
+        // New doors for rooms 2-3 and 3-4
+        UUID door3Id = keyForDoor1.getId();
+        @SuppressWarnings("unchecked")
+        Pair<Integer,Point>[] d3ends = (Pair<Integer,Point>[])
+            new Pair<?,?>[]{
+                new Pair<>(2, new Point(3, 9)), // Room 2 right border
+                new Pair<>(3, new Point(3, 0))  // Room 3 left border
+            };
+        Door door3 = new Door(door3Id, d3ends, true, false);
 
-        Chest chest1 = new Chest("Gold",   new Point(3,2), null, UUID.randomUUID(), true,  new Item[0]);
+        UUID door4Id = UUID.randomUUID();
+        @SuppressWarnings("unchecked")
+        Pair<Integer,Point>[] d4ends = (Pair<Integer,Point>[])
+            new Pair<?,?>[]{
+                new Pair<>(3, new Point(6, 5)), // Room 3 bottom border
+                new Pair<>(4, new Point(0, 5))  // Room 4 top border
+            };
+        Door door4 = new Door(door4Id, d4ends, false, true);
+
+        Chest chest1 = new Chest("Gold",   new Point(3,2), null, keyForDoor1.getId(), true,  new Item[0]);
         Chest chest2 = new Chest("Potion", new Point(5,5), null, UUID.randomUUID(), false, new Item[0]);
 
-        Door[] room1Doors   = { door1, door2 };
-        Chest[] room1Chests = { chest1 };
-        Entity[] room1Ents  = { player, goblin };
-
-        Door[] room2Doors   = { door2 };
-        Chest[] room2Chests = { chest2 };
-        Entity[] room2Ents  = { /* more mobs if you like */ };
+        Room room1 = new Room(1, new Door[]{door1, door2}, new Chest[]{chest1}, new Entity[]{player, goblin});
+        Room room2 = new Room(2, new Door[]{door2, door3}, new Chest[]{chest2}, new Entity[]{});
+        Room room3 = new Room(3, new Door[]{door3, door4}, new Chest[]{}, new Entity[]{});
+        Room room4 = new Room(4, new Door[]{door4}, new Chest[]{}, new Entity[]{});
 
         Map<Integer,Room> dungeon = new HashMap<>();
-        dungeon.put(1, new Room(1, room1Doors, room1Chests, room1Ents));
-        dungeon.put(2, new Room(2, room2Doors, room2Chests, room2Ents));
+        dungeon.put(1, room1);
+        dungeon.put(2, room2);
+        dungeon.put(3, room3);
+        dungeon.put(4, room4);
 
         // start in room 1
         Room current = dungeon.get(1);
@@ -167,45 +198,63 @@ public class Main {
                     }
 
                     // 2) If no chest action (or it failed), try doors
+                    // --- inside your 'O' handler in Main.java ---
                     if (!actionDone && surroundings.contains("d")) {
                         boolean doorOpened = false;
                         for (Door door : current.getDoors()) {
-                            Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
+                            Point doorPos   = door.getPositionByRoomNumber(current.getRoomNumber());
                             Point playerPos = player.getPlayerPosition();
-                            int dx = Math.abs(playerPos.getX() - doorPos.getX());
-                            int dy = Math.abs(playerPos.getY() - doorPos.getY());
-                            if (dx <= 1 && dy <= 1) {
-                                Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
-                                if (otherEnd != null) {
-                                    int newRoomNumber = otherEnd.getLeft();
-                                    Point newPosition = otherEnd.getRight();
-                                    Room newRoom = dungeon.get(newRoomNumber);
+                            if (Math.abs(playerPos.getX() - doorPos.getX()) > 1 ||
+                                Math.abs(playerPos.getY() - doorPos.getY()) > 1) {
+                                continue;
+                            }
 
-                                    if (newRoom != null) {
-                                        char[][] newGrid = newRoom.getGrid();
-                                        if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
-                                            newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
-
-                                            player.moveToNewRoom(newRoom, newPosition);
-                                            current = newRoom;
-                                            System.out.println("Entered room " + newRoomNumber);
-                                            doorOpened = true;
-                                            actionDone = true;
-                                            break;
-                                        } else {
-                                            System.out.println("Invalid door position in new room!");
-                                        }
-                                    } else {
-                                        System.out.println("The door leads nowhere!");
-                                    }
+                            // 1) Try to open (key / crowbar)
+                            if (door.isLocked()) {
+                                UUID keyId = player.findKeyForDoor(door);
+                                if (keyId != null) {
+                                    door.unlockWithKey(keyId);
+                                    System.out.println("You used the key to unlock the door.");
+                                }
+                                else if (door.canBeUnlockedByCrowbar() && player.hasCrowbar()) {
+                                    door.unlockWithCrowbar();
+                                    System.out.println("You pried the door open with your crowbar.");
+                                }
+                                else {
+                                    System.out.println("The door is locked. You need the right key or a crowbar.");
+                                    actionDone = true;
+                                    break;
                                 }
                             }
+
+                            // 2) Door is now unlocked → find the other side
+                            Pair<Integer,Point> exit = null;
+                            for (Pair<Integer,Point> end : door.getRoomsAndPositions()) {
+                                if (!end.getLeft().equals(current.getRoomNumber())) {
+                                    exit = end;
+                                    break;
+                                }
+                            }
+
+                            // 3) Move player into the new room
+                            if (exit != null) {
+                                Room next   = dungeon.get(exit.getLeft());
+                                Point dest  = exit.getRight();
+                                player.moveToNewRoom(next, dest);
+                                current = next;
+                                System.out.println("Entered room " + current.getRoomNumber());
+                                doorOpened = true;
+                                actionDone  = true;
+                                break;
+                            }
                         }
+
                         if (!doorOpened) {
                             System.out.println("You can't open any nearby door.");
                             actionDone = true;
                         }
                     }
+
 
                     // 3) Neither chest nor door could be opened
                     if (!actionDone) {

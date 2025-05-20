@@ -11,6 +11,7 @@ import items.Weapon;
 import items.Key;
 import items.Item;
 import items.Bandage;
+import items.Crowbar;
 import items.Ammo;
 public class Player extends Entity {
     private Weapon currentWeapon; 
@@ -230,7 +231,7 @@ public class Player extends Entity {
         }
     }
 
-    private UUID findKeyForChest(Chest chest) {
+    public UUID findKeyForChest(Chest chest) {
         for(Item item : getInventory()) {
             if(item instanceof Key) {
                 Key key = (Key) item;
@@ -242,7 +243,7 @@ public class Player extends Entity {
         return null;
     }
 
-    private UUID findKeyForDoor(Door door) {
+    public UUID findKeyForDoor(Door door) {
         for(Item item : getInventory()) {
             if(item instanceof Key) {
                 Key key = (Key) item;
@@ -309,6 +310,12 @@ public class Player extends Entity {
     }
 
 
+    public boolean hasCrowbar() {
+        for (Item item : getInventory()) {
+            if (item instanceof Crowbar) return true;
+        }
+        return false;
+    }
 
 
 

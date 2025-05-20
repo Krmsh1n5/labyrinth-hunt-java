@@ -38,11 +38,12 @@ public class Chest implements Activatable {
     // public void setUnlocked() { isLocked = false; }
     // public void setLocked() { isLocked = true; }    
 
-    void activate() {
-        if(!isLocked) {
+    @Override
+    public void activate(UUID keyId) {
+        if (!isLocked) {
             System.out.println("Opening chest: " + getId());
-            Arrays.stream(inventory).forEach(item -> 
-                System.out.println("Contains: " + item));
+            Arrays.stream(inventory)
+                .forEach(item -> System.out.println("Contains: " + item));
         } else {
             System.out.println("Chest is locked!");
         }

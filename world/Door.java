@@ -1,6 +1,8 @@
 package world;
 
 import java.util.UUID;
+
+import util.Activatable;
 import util.Pair;
 import util.Point;
 import items.Key;
@@ -68,9 +70,10 @@ public class Door implements Activatable {
     // }
 
     // Methods
-    public boolean canBeUnlockedByKey(UUID keyId) {
-        return keyId.equals(keyId);
+    public boolean canBeUnlockedByKey(UUID candidateKeyId) {
+        return this.keyId.equals(candidateKeyId);
     }
+
 
     public boolean canBeUnlockedByCrowbar() {
         return isCrowbarAccessible;
