@@ -32,7 +32,6 @@ public class Room {
     private void resetGrid() {
         int rows = size.getLeft();
         int cols = size.getRight();
-
         // Reset walls and floor
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
@@ -43,14 +42,14 @@ public class Room {
                 }
             }
         }
-
+        
         // Re-add doors
         for (Door door : doors) {
             Point pos = door.getPositionByRoomNumber(this.roomNumber);
             if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'D';
         }
-
-        // Re-add chests
+        
+        // Re-add chests, but only those that are still in bounds (not looted)
         for (Chest chest : chests) {
             Point pos = chest.getPosition();
             if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'C';

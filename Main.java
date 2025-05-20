@@ -134,43 +134,89 @@ public class Main {
                 }
             }
             else if (dir == 'o') {
-                boolean doorOpened = false;
-                for (Door door : current.getDoors()) {
-                    Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
-                    Point playerPos = player.getPlayerPosition();
-                    int dx = Math.abs(playerPos.getX() - doorPos.getX());
-                    int dy = Math.abs(playerPos.getY() - doorPos.getY());
+                String surroundings = player.checkPlayerSurroundings(current);
+                boolean actionDone = false;
 
-                    if (dx <= 1 && dy <= 1) { // Player is near the door
-                        Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
-                        if (otherEnd != null) {
-                            int newRoomNumber = otherEnd.getLeft();
-                            Point newPosition = otherEnd.getRight();
-                            Room newRoom = dungeon.get(newRoomNumber);
+                // do we have a chest or a door nearby?
+                if (surroundings.contains("c") || surroundings.contains("d")) {
 
-                            // Validate new room and position
-                            if (newRoom != null) {
-                                char[][] newGrid = newRoom.getGrid();
-                                if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
-                                    newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
-                                    
-                                    // Move player to the new room
-                                    player.moveToNewRoom(newRoom, newPosition);
-                                    current = newRoom; // Update current room reference
-                                    System.out.println("Entered room " + newRoomNumber);
-                                    doorOpened = true;
-                                    break;
-                                } else {
-                                    System.out.println("Invalid door position in new room!");
-                                }
-                            } else {
-                                System.out.println("The door leads nowhere!");
+                    // 1) Try chest first (if any)
+                    if (surroundings.contains("c")) {
+                        Chest targetChest = null;
+                        for (Chest chest : current.getChests()) {
+                            Point chestPos = chest.getPosition();
+                            Point playerPos = player.getPlayerPosition();
+                            int dx = Math.abs(playerPos.getX() - chestPos.getX());
+                            int dy = Math.abs(playerPos.getY() - chestPos.getY());
+                            if (dx <= 1 && dy <= 1) {
+                                targetChest = chest;
+                                break;
                             }
                         }
+
+                        if (targetChest != null) {
+                            // open() will unlock if you have the right key (or crowbar, assuming you extend open())
+                            if (player.open(targetChest)) {
+                                player.loot(targetChest);
+                                System.out.println("You opened and looted the chest!");
+                            } else {
+                                System.out.println("The chest is locked and you have no way to open it.");
+                            }
+                            actionDone = true;
+                        }
                     }
+
+                    // 2) If no chest action (or it failed), try doors
+                    if (!actionDone && surroundings.contains("d")) {
+                        boolean doorOpened = false;
+                        for (Door door : current.getDoors()) {
+                            Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
+                            Point playerPos = player.getPlayerPosition();
+                            int dx = Math.abs(playerPos.getX() - doorPos.getX());
+                            int dy = Math.abs(playerPos.getY() - doorPos.getY());
+                            if (dx <= 1 && dy <= 1) {
+                                Pair<Integer, Point> otherEnd = player.interactWithDoor(door, current);
+                                if (otherEnd != null) {
+                                    int newRoomNumber = otherEnd.getLeft();
+                                    Point newPosition = otherEnd.getRight();
+                                    Room newRoom = dungeon.get(newRoomNumber);
+
+                                    if (newRoom != null) {
+                                        char[][] newGrid = newRoom.getGrid();
+                                        if (newPosition.getY() >= 0 && newPosition.getY() < newGrid.length &&
+                                            newPosition.getX() >= 0 && newPosition.getX() < newGrid[0].length) {
+
+                                            player.moveToNewRoom(newRoom, newPosition);
+                                            current = newRoom;
+                                            System.out.println("Entered room " + newRoomNumber);
+                                            doorOpened = true;
+                                            actionDone = true;
+                                            break;
+                                        } else {
+                                            System.out.println("Invalid door position in new room!");
+                                        }
+                                    } else {
+                                        System.out.println("The door leads nowhere!");
+                                    }
+                                }
+                            }
+                        }
+                        if (!doorOpened) {
+                            System.out.println("You can't open any nearby door.");
+                            actionDone = true;
+                        }
+                    }
+
+                    // 3) Neither chest nor door could be opened
+                    if (!actionDone) {
+                        System.out.println("Nothing here you can open.");
+                    }
+
+                } else {
+                    System.out.println("No door or chest nearby to open!");
                 }
-                if (!doorOpened) System.out.println("No door nearby or couldn't open.");
             }
+
             else if (!moved) {
                 // neither moved nor attacked nor opened
                 System.out.println("Can't move beyond grid boundaries!");

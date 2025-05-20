@@ -156,8 +156,16 @@ public class Player extends Entity {
         
         setInventory(playerInventory);
 
-        // Clear the mob's inventory after looting
+        // Clear the chest's inventory after looting
         chest.setInventory(new Item[0]);
+        
+        // Mark the chest as looted by setting its position off-grid
+        chest.markAsLooted();
+        
+        // Update the room's grid to reflect the change
+        if (getLocation() != null) {
+            getLocation().updateEntityPositions();
+        }
     }
 
     public void loot(Mob mob) {

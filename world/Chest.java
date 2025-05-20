@@ -9,7 +9,7 @@ import util.Point;
 public class Chest {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
-    private final Point spawnPosition;
+    private Point spawnPosition;
     private final Room spawnLocation;
     private Item[] inventory;
     private boolean isLocked;
@@ -30,6 +30,9 @@ public class Chest {
     public Item[] getInventory() { return inventory; }
     public boolean isLocked() { return isLocked; }
 
+    public void setPosition(Point position) {
+        this.spawnPosition = position;
+    }
     // Setters
     public void setInventory(Item[] inventory) { this.inventory = inventory; }
     // public void setUnlocked() { isLocked = false; }
@@ -70,6 +73,11 @@ public class Chest {
             System.out.println("Chest is locked!");
             return new Item[0];
         }
+    }
+
+    public void markAsLooted() {
+    // Set position to an invalid position off-grid
+        this.setPosition(new Point(-1, -1));
     }
 
 }
