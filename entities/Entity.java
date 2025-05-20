@@ -28,20 +28,20 @@ public abstract class Entity {
 
 
     // Getters
-    protected String getName() { return name; }
-    protected int getHealth() { return health; }
-    protected Item[] getInventory() { return inventory; }
+    public String getName() { return name; }
+    public int getHealth() { return health; }
+    public Item[] getInventory() { return inventory; }
     public Point getPosition() { return position; }
-    protected Room getLocation() { return location; }
-    protected int getStrength() { return strength; }
+    public Room getLocation() { return location; }
+    public int getStrength() { return strength; }
     
     // Setters
-    protected void setName(String name) { this.name = name; }
-    protected void setHealth(int health) { this.health = health; }
-    protected void setInventory(Item[] inventory) { this.inventory = inventory; }
-    protected void setPosition(Point position) { this.position = position; }
-    protected void setLocation(Room location) { this.location = location; }
-    protected void setStrength(int strength) { this.strength = strength; }
+    public void setName(String name) { this.name = name; }
+    public void setHealth(int health) { this.health = health; }
+    public void setInventory(Item[] inventory) { this.inventory = inventory; }
+    public void setPosition(Point position) { this.position = position; }
+    public void setLocation(Room location) { this.location = location; }
+    public void setStrength(int strength) { this.strength = strength; }
 
     // Methods
     public void addToInventory(Item item) {

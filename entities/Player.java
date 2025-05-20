@@ -20,11 +20,11 @@ public class Player extends Entity {
     }
 
     // Getters
-    protected Weapon getCurrentWeapon() {
+    public Weapon getCurrentWeapon() {
         return currentWeapon;
     }
     // Setters
-    protected void setCurrentWeapon(Weapon currentWeapon) {
+    public void setCurrentWeapon(Weapon currentWeapon) {
         this.currentWeapon = currentWeapon;
     }
 
@@ -42,7 +42,7 @@ public class Player extends Entity {
         return '@'; // or any symbol for Player
     }
 
-    protected int getMaxHealth() {
+    public int getMaxHealth() {
         return maxHealth;
     }
 
@@ -118,7 +118,6 @@ public class Player extends Entity {
         current.setX(newX);
         current.setY(newY);
         return true;
-
     }
     
     public void loot(Chest chest) {
@@ -378,4 +377,25 @@ public class Player extends Entity {
         }
         return null; // No matching ammo found
     }
+
+    public Bandage getBandages() {
+        for (Item item : getInventory()) {
+            if (item instanceof Bandage) {
+                return (Bandage) item;
+            }
+        }
+        return null; 
+    }
+
+    public Weapon[] getWeapons() {
+        Weapon[] weapons = new Weapon[getInventory().length];
+        int index = 0;
+        for (Item item : getInventory()) {
+            if (item instanceof Weapon) {
+                weapons[index++] = (Weapon) item;
+            }
+        }
+        return Arrays.copyOf(weapons, index); // Return only the filled part of the array
+    }
+
 }
