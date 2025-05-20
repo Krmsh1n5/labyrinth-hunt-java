@@ -46,7 +46,7 @@ public class Room {
 
         // Re-add doors
         for (Door door : doors) {
-            Point pos = door.getPosition();
+            Point pos = door.getPositionbyRoom(this);
             if (isInBounds(pos)) grid[pos.getY()][pos.getX()] = 'D';
         }
 
