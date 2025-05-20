@@ -33,21 +33,6 @@ public class Player extends Entity {
     }
 
     // Methods
-    @Override
-    public void die() {
-        System.out.println("Player died!");
-    }
-
-    @Override
-    public int attack() {
-        if(currentWeapon != null) {
-            currentWeapon.shoot();
-        } else {
-            System.out.println("Player attacking with bare hands");
-        }
-        return currentWeapon != null ? currentWeapon.getDamage() : 0;
-    }
-
     public boolean move(char direction, int xMatrix, int yMatrix) {
         Point current = getPosition();
         int newX = current.getX();
@@ -170,4 +155,127 @@ public class Player extends Entity {
     public void chooseWeapon(Weapon weapon) { 
         this.currentWeapon = weapon;
     } 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public void die() {
+        System.out.println("Player died!");
+    }
+
+    @Override
+    public int attack() {
+        if(currentWeapon != null) {
+            currentWeapon.shoot();
+        } else {
+            System.out.println("Player attacking with bare hands");
+        }
+        return currentWeapon != null ? currentWeapon.getDamage() : 0;
+    }
 }
