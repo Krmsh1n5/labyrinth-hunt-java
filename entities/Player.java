@@ -131,24 +131,62 @@ public class Player extends Entity {
     public void loot(Chest chest) {
         Item[] items = chest.getInventory();
         Item[] playerInventory = getInventory();
-        int newSize = playerInventory.length + items.length;
-        Item[] newInventory = Arrays.copyOf(playerInventory, newSize);
         
-        System.arraycopy(items, 0, newInventory, playerInventory.length, items.length);
-        setInventory(newInventory);
+        for (Item item : items) {
+            if (item instanceof Bandage) {
+                Bandage bandage = (Bandage) item;
+                Bandage existingBandage = getBandages();
+                if (existingBandage != null) {
+                    existingBandage.setQuantity(bandage.getQuantity() + existingBandage.getQuantity());
+                    continue;
+                }
+            } else if (item instanceof Ammo) {
+                Ammo ammo = (Ammo) item;
+                Ammo existingAmmo = getAmmoFromInventory(ammo.getWeaponType());
+                if (existingAmmo != null) {
+                    existingAmmo.setQuantity(ammo.getQuantity() + existingAmmo.getQuantity());
+                    continue; 
+                }
+            }
+
+            // Add the item to the inventory if it's not a Bandage or Ammo with an existing match
+            playerInventory = Arrays.copyOf(playerInventory, playerInventory.length + 1);
+            playerInventory[playerInventory.length - 1] = item;
+        }
         
-        // Clear the chest after looting
+        setInventory(playerInventory);
+
+        // Clear the mob's inventory after looting
         chest.setInventory(new Item[0]);
     }
 
     public void loot(Mob mob) {
         Item[] items = mob.lootMob();
         Item[] playerInventory = getInventory();
-        int newSize = playerInventory.length + items.length;
-        Item[] newInventory = Arrays.copyOf(playerInventory, newSize);
-        
-        System.arraycopy(items, 0, newInventory, playerInventory.length, items.length);
-        setInventory(newInventory);
+
+        for (Item item : items) {
+            if (item instanceof Bandage) {
+                Bandage bandage = (Bandage) item;
+                Bandage existingBandage = getBandages();
+                if (existingBandage != null) {
+                    existingBandage.setQuantity(bandage.getQuantity() + existingBandage.getQuantity());
+                    continue;
+                }
+            } else if (item instanceof Ammo) {
+                Ammo ammo = (Ammo) item;
+                Ammo existingAmmo = getAmmoFromInventory(ammo.getWeaponType());
+                if (existingAmmo != null) {
+                    existingAmmo.setQuantity(ammo.getQuantity() + existingAmmo.getQuantity());
+                    continue; 
+                }
+            }
+
+            // Add the item to the inventory if it's not a Bandage or Ammo with an existing match
+            playerInventory = Arrays.copyOf(playerInventory, playerInventory.length + 1);
+            playerInventory[playerInventory.length - 1] = item;
+        }
+
+        setInventory(playerInventory);
 
         // Clear the mob's inventory after looting
         mob.setInventory(new Item[0]);

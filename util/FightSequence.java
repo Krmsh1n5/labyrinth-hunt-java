@@ -106,24 +106,32 @@ public class FightSequence {
         }
     }
 
-    private static void handleWeaponChange() {
-        Weapon currentWeapon = player.getCurrentWeapon();
-        System.out.println("\nAvailable Weapons:");
-        Weapon[] weapons = player.getWeapons();
-        
-        for(Weapon w : weapons) {
-            int i = 1;
-            Ammo ammo = player.getAmmoFromInventory(w.getType());
-            System.out.println((i) + ". " + w.getName() + 
-                             " (Dmg: " + w.getDamage() + 
-                             ", Ammo: " + ammo.getQuantity() + ")");
-        }
-        
-        int choice = Integer.parseInt(scanner.nextLine()) - 1;
-        currentWeapon = weapons[choice];
-        System.out.println("Switched to " + currentWeapon.getName());
-        executeAttack();
+private static void handleWeaponChange() {
+    System.out.println("\nAvailable Weapons:");
+    Weapon[] weapons = player.getWeapons();
+    
+    int i = 1;
+    for(Weapon w : weapons) {
+        Ammo ammo = player.getAmmoFromInventory(w.getType());
+        System.out.println(i + ". " + w.getName() + 
+                         " (Dmg: " + w.getDamage() + 
+                         ", Ammo: " + (ammo != null ? ammo.getQuantity() : 0) + ")");
+        i++;
     }
+    
+    // Get and validate input
+    int choice = Integer.parseInt(scanner.nextLine()) - 1;
+    if(choice < 0 || choice >= weapons.length) {
+        System.out.println("Invalid choice! Using current weapon.");
+        return;
+    }
+    
+    // Update and confirm the new weapon
+    Weapon newWeapon = weapons[choice];
+    player.setCurrentWeapon(newWeapon);
+    System.out.println("Switched to " + newWeapon.getName()); // Use newWeapon instead of currentWeapon
+    executeAttack();
+}
 
     private static void executeAttack() {
         Weapon currentWeapon = player.getCurrentWeapon();
@@ -143,6 +151,7 @@ public class FightSequence {
         Bandage currentBandage = player.getBandages();
         if(currentBandage.getQuantity() > 0) {
             player.heal(currentBandage);
+            currentBandage.useBandage(1);
             System.out.println("Healed " + currentBandage.getHealingAmount() + " health!");
         } else {
             System.out.println("No bandages remaining!");
@@ -166,6 +175,17 @@ public class FightSequence {
             player.loot(targetMob);
             for(Item item : loot) {
                 System.out.println("Looted: " + item.getName());
+            }
+            Item[] playerInventory = player.getInventory();
+            for(Item item : playerInventory) {
+                System.out.println("You now have: " + item.getName());
+                if(item instanceof Ammo) {
+                    Ammo ammo = (Ammo) item;
+                    System.out.println("Ammo quantity: " + ammo.getQuantity());
+                } else if(item instanceof Bandage) {
+                    Bandage bandage = (Bandage) item;
+                    System.out.println("Bandage quantity: " + bandage.getQuantity());
+                }
             }
             targetMob.die();
         }
