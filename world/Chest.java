@@ -30,8 +30,8 @@ public class Chest {
     public Item[] getInventory() { return inventory; }
     public boolean isLocked() { return isLocked; }
 
-    // Setters are redundant for Chest class
-    // public void setInventory(Item[] inventory) { this.inventory = inventory; }
+    // Setters
+    public void setInventory(Item[] inventory) { this.inventory = inventory; }
     // public void setUnlocked() { isLocked = false; }
     // public void setLocked() { isLocked = true; }    
 

@@ -1,6 +1,7 @@
 package entities;
 
 import java.util.Arrays;
+import java.util.UUID;
 import world.Room;
 import world.Chest;
 import world.Door;
@@ -8,9 +9,11 @@ import util.Point;
 import items.Weapon;
 import items.Key;
 import items.Item;
+import items.Bandage;
 
 public class Player extends Entity {
-    private Weapon currentWeapon;
+    private Weapon currentWeapon; 
+    private final int maxHealth = 100;
 
     public Player(String name, int health, Item[] inventory, Point position, Room location, int strength) {
         super(name, health, inventory, position, location, strength);
@@ -68,7 +71,7 @@ public class Player extends Entity {
     }
     
     public void loot(Chest chest) {
-        Item[] items = chest.getItems();
+        Item[] items = chest.getInventory();
         Item[] playerInventory = getInventory();
         int newSize = playerInventory.length + items.length;
         Item[] newInventory = Arrays.copyOf(playerInventory, newSize);
@@ -77,7 +80,7 @@ public class Player extends Entity {
         setInventory(newInventory);
         
         // Clear the chest after looting
-        chest.setItems(new Item[0]);
+        chest.setInventory(new Item[0]);
     }
 
     public void loot(Mob mob) {
@@ -105,7 +108,7 @@ public class Player extends Entity {
                 return false;
             }
         } else {
-            return true
+            return true;
         }
     }
 
@@ -113,7 +116,7 @@ public class Player extends Entity {
         if(chest.isLocked()) {
             UUID key = findKeyForChest(chest);
             if(key != null) {
-                chest.unlock(key);
+                chest.unlockChest(key);
                 return true;
             } else {
                 return false;
@@ -147,7 +150,24 @@ public class Player extends Entity {
         return null;
     }
 
-    public void heal() { /* Implementation */ }
+    
+    public void heal(Bandage bandage) {
+        if (bandage.getQuantity() <= 0) {
+            System.out.println("No bandages left!");
+            return;
+        }
+        int currentHealth = getHealth();
+        int healingAmount = bandage.getHealingAmount();
+        
+        if (currentHealth + healingAmount > maxHealth) {
+            healingAmount = maxHealth - currentHealth; // Heal only up to max health
+            }
+        
+        currentHealth += healingAmount;
+        setHealth(currentHealth);
+        bandage.useBandage(1); // Use one bandage
+    }
+
     public void chooseWeapon(Weapon weapon) { 
         this.currentWeapon = weapon;
     } 
