@@ -46,7 +46,7 @@ public class Main {
         System.out.println("Game exited!");
     }
 
-    // 👇 New method
+    // New method
     public static void printGrid(Player player, int width, int height) {
         char[][] grid = new char[height][width]; // note: rows=height, cols=width
         
