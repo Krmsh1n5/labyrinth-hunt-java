@@ -5,9 +5,8 @@ import util.Pair;
 import util.Point;
 import items.Key;
 import items.Crowbar;
-import util.Activatable;
 
-public class Door implements Activatable {
+public class Door {
     private final UUID id = UUID.randomUUID();
     private final UUID keyId;
     private final Point position;
@@ -48,15 +47,6 @@ public class Door implements Activatable {
     // }
 
     // Methods
-    @Override
-    public void activate(UUID keyId) {
-        if (keyId == null) {
-            this.unlockWithCrowbar();
-        } else {
-            this.unlockWithKey(keyId);
-        }
-    }
-
     public boolean canBeUnlockedByKey(UUID keyId) {
         return keyId.equals(keyId);
     }

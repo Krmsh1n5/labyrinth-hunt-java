@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import entities.Player;
 import entities.Entity;
+import entities.Mob;
 import util.Pair;
 import util.Point;
 import world.Chest;
@@ -20,6 +21,8 @@ public class Main {
         Player player = new Player("Hero", 100, new Item[10], 
             new Point(3, 4), null, 10);
 
+        Mob mob = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
+
         Door[] doors = new Door[] {
             new Door(UUID.randomUUID(), new Point(1, 1), new Pair<>(null, null), true, false)
         };
@@ -27,7 +30,7 @@ public class Main {
             new Chest("Treasure", new Point(3, 2), null, UUID.randomUUID(), true, new Item[0])
         };
 
-        Room room = new Room(1, doors, chests, new Entity[] { player });
+        Room room = new Room(1, doors, chests, new Entity[] { player, mob });
         char[][] grid = room.getGrid();
 
         System.out.println("5x8 Grid Player Movement");
@@ -47,7 +50,9 @@ public class Main {
                 char dir = input.charAt(0);
                 boolean moved = player.move(dir, room);
                 
-                if (!moved) {
+                if (moved) {
+                    player.checkPlayerSurroundings(room); // Show surroundings after moving
+                } else {
                     System.out.println("Can't move beyond grid boundaries!");
                 }
             }

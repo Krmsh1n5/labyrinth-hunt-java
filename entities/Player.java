@@ -37,6 +37,45 @@ public class Player extends Entity {
         return '@'; // or any symbol for Player
     }
 
+    protected int getMaxHealth() {
+        return maxHealth;
+    }
+
+    public void checkPlayerSurroundings(Room room) {
+        // Check for nearby chests
+        Point playerPos = getPosition();
+        boolean chestNearby = false;
+        boolean mobNearby = false;
+
+        for (Chest chest : room.getChests()) {
+            Point chestPos = chest.getPosition();
+            int dx = Math.abs(playerPos.getX() - chestPos.getX());
+            int dy = Math.abs(playerPos.getY() - chestPos.getY());
+
+            // Check if chest is within 1 cell (3x3 area around player)
+            if (dx <= 1 && dy <= 1) {
+                chestNearby = true;
+                break;
+            }
+        }
+
+        for (Entity entity : room.getEntities()) {
+            if (entity == this) continue; // Skip the player
+            if (entity instanceof Mob) {
+                Point mobPos = entity.getPosition();
+                int dx = Math.abs(playerPos.getX() - mobPos.getX());
+                int dy = Math.abs(playerPos.getY() - mobPos.getY());
+                if (dx <= 1 && dy <= 1) {
+                    mobNearby = true;
+                    break;
+                }
+            }
+        }
+
+        if (chestNearby) System.out.println("There is a chest nearby! Press 'L' to loot.");
+        if (mobNearby) System.out.println("There is a mob nearby! Press 'A' to attack.");
+    }
+
     // Methods
     public boolean move(char direction, Room room) {
         Point current = getPosition();
@@ -95,10 +134,9 @@ public class Player extends Entity {
         if(door.isLocked()) {
             UUID key = findKeyForDoor(door);
             if(key != null) {
-                door.activate(key);
+                door.unlockWithKey(key);
                 return true;
             } else if(door.canBeUnlockedByCrowbar()) {
-                door.activate(null);
                 return true;
             } else {
                 return false;
@@ -112,7 +150,7 @@ public class Player extends Entity {
         if(chest.isLocked()) {
             UUID key = findKeyForChest(chest);
             if(key != null) {
-                chest.activate(key);
+                chest.unlockChest(key);
                 return true;
             } else {
                 return false;
@@ -138,7 +176,7 @@ public class Player extends Entity {
         for(Item item : getInventory()) {
             if(item instanceof Key) {
                 Key key = (Key) item;
-                if(door.canBeUnlockedByKey(key.getId())) {
+                if(key.getId().equals(door.getKeyId())) {
                     return key.getId();
                 }
             }
