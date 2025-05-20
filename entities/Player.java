@@ -398,6 +398,7 @@ public class Player extends Entity {
     }
 
     public Ammo getAmmoFromInventory(String weaponType) {
+        // Comment
         Item[] inventory = this.getInventory();
         for (Item item : inventory) {
             if (item instanceof Ammo) {
