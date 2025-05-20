@@ -1,3 +1,4 @@
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -32,78 +33,82 @@ public class Main {
         String rifleType = "Rifle";
         String shotgunType = "Shotgun";
         
-        // Create initial items
+        // Create initial items - IMPROVED: Player starts with better equipment
         Bandage basicBandage = new Bandage("Basic Bandage", 5, 15);
-        Ammo pistolAmmo = new Ammo("Pistol Ammo", pistolType, 10);
-        Weapon pistol = new Weapon("Basic Pistol", pistolType, 5);
-        Crowbar crowbar = new Crowbar("Rusty Crowbar");
+        Ammo pistolAmmo = new Ammo("Pistol Ammo", pistolType, 20); // More ammo
+        Weapon pistol = new Weapon("Basic Pistol", pistolType, 15); // Stronger pistol
+        Crowbar crowbar = new Crowbar("Sturdy Crowbar"); // Better crowbar
+        Bandage advancedBandage = new Bandage("Advanced Bandage", 3, 30); // Better healing
 
         // Keys for doors
         Key keyForDoor1 = new Key("Bronze Key");
         Key keyForDoor2 = new Key("Silver Key");
         Key keyForDoor3 = new Key("Golden Key");
+        Key keyForChest3 = new Key("Iron Key"); // New key for chest3
 
-        // Set player's starting inventory
+        // Set player's starting inventory - IMPROVED: Player starts with more items
         Item[] playerInventory = new Item[] {
             basicBandage,
+            advancedBandage,
             pistolAmmo,
             pistol,
             crowbar,
+            keyForDoor1, // IMPROVED: Player now starts with the key to Room 2
         };
 
         player.setInventory(playerInventory);
         player.setCurrentWeapon(pistol);
 
-        // --- Create mobs ---
+        // --- Create mobs --- IMPROVED: Weaker enemies
         // Room 1: Weak goblin
-        Mob goblin = new Mob("Goblin", 30, new Item[1], new Point(2, 2), null, 5);
+        Mob goblin = new Mob("Goblin", 20, new Item[1], new Point(2, 2), null, 3);
         Ammo goblinAmmo = new Ammo("Goblin's Pistol Ammo", pistolType, 5);
-        goblin.setInventory(new Item[] { goblinAmmo, keyForDoor1 });
+        goblin.setInventory(new Item[] { goblinAmmo }); // No key needed here since player has it
 
-        // Room 2: Stronger orc
-        Mob orc = new Mob("Orc", 50, new Item[2], new Point(5, 5), null, 7);
+        // Room 2: Weaker orc
+        Mob orc = new Mob("Orc", 35, new Item[2], new Point(5, 5), null, 5);
         Weapon orcWeapon = new Weapon("Orc's Rifle", rifleType, 8);
         Ammo orcAmmo = new Ammo("Rifle Ammo", rifleType, 15);
         orc.setInventory(new Item[] { orcWeapon, orcAmmo });
 
-        // Room 3: Two zombies
-        Mob zombie1 = new Mob("Zombie", 40, new Item[1], new Point(2, 3), null, 6);
-        Mob zombie2 = new Mob("Undead", 35, new Item[1], new Point(5, 2), null, 6);
+        // Room 3: Two zombies (weaker)
+        Mob zombie1 = new Mob("Zombie", 25, new Item[1], new Point(2, 3), null, 4);
+        Mob zombie2 = new Mob("Undead", 20, new Item[1], new Point(5, 2), null, 4);
         zombie1.setInventory(new Item[] { new Bandage("Bloodied Bandage", 2, 10) });
-        zombie2.setInventory(new Item[] { keyForDoor2 });
+        zombie2.setInventory(new Item[] { keyForDoor2 }); // Zombie2 has the key to Room 4
 
-        // Room 4: Final boss
-        Boss finalBoss = new Boss("Dungeon Lord", 120, new Item[3], new Point(5, 5), null, 15);
+        // Room 4: Final boss (weaker)
+        Boss finalBoss = new Boss("Dungeon Lord", 80, new Item[3], new Point(5, 5), null, 12);
         Weapon bossWeapon = new Weapon("Legendary Shotgun", shotgunType, 20);
         Ammo bossAmmo = new Ammo("Shotgun Shells", shotgunType, 8);
         finalBoss.setInventory(new Item[] { 
             bossWeapon, 
             bossAmmo, 
-            keyForDoor3, 
+            keyForDoor3, // Boss has exit key
             new Bandage("Advanced Medkit", 3, 25) 
         });
 
         // --- Create doors between rooms ---
-        // Door 1: Room 1 to Room 2 (requires Bronze Key)
+        // Door 1: Room 1 to Room 2 (requires Bronze Key - player has this)
         UUID door1Id = keyForDoor1.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d1ends = (Pair<Integer,Point>[])
             new Pair<?,?>[]{ new Pair<>(1, new Point(9, 4)), new Pair<>(2, new Point(0, 4)) };
         Door door1 = new Door(door1Id, d1ends, true, false);
 
-        // Door 2: Room 2 to Room 3 (requires Silver Key)
+        // Door 2: Room 2 to Room 3 (can be unlocked with crowbar)
         UUID door2Id = keyForDoor2.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
             new Pair<?,?>[]{ new Pair<>(2, new Point(9, 2)), new Pair<>(3, new Point(0, 2)) };
-        Door door2 = new Door(door2Id, d2ends, true, false);
+        Door door2 = new Door(door2Id, d2ends, true, true); // Can be opened with crowbar
 
-        // Door 3: Room 3 to Room 4 (can be unlocked with crowbar)
+        // Door 3: Room 3 to Room 4 (requires Silver Key from zombie)
         UUID door3Id = UUID.randomUUID();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d3ends = (Pair<Integer,Point>[])
             new Pair<?,?>[]{ new Pair<>(3, new Point(5, 9)), new Pair<>(4, new Point(5, 0)) };
-        Door door3 = new Door(door3Id, d3ends, true, true);
+        Door door3 = new Door(door3Id, d3ends, true, false); // Can't be opened with crowbar, needs key
 
         // Secret exit door (requires Golden Key from boss)
         UUID exitDoorId = keyForDoor3.getId();
@@ -113,29 +118,31 @@ public class Main {
         Door exitDoor = new Door(exitDoorId, exitEnds, true, false);
 
         // --- Create chests ---
-        // Room 1: Unlocked chest with basic supplies
+        // Room 1: Unlocked chest with basic supplies and Iron Key
         Chest chest1 = new Chest("Wooden Chest", new Point(7, 2), null, UUID.randomUUID(), false, 
             new Item[] { 
                 new Bandage("Extra Bandage", 2, 15),
-                new Ammo("Extra Pistol Ammo", pistolType, 8) 
+                new Ammo("Extra Pistol Ammo", pistolType, 8),
+                keyForChest3, // IMPROVED: This chest contains the key for chest3
             });
 
-        // Room 2: Locked chest with rifle (requires Bronze Key)
-        Chest chest2 = new Chest("Steel Chest", new Point(3, 7), null, keyForDoor1.getId(), true,
+        // Room 2: Unlocked chest with rifle 
+        Chest chest2 = new Chest("Steel Chest", new Point(3, 7), null, UUID.randomUUID(), false, // IMPROVED: Now unlocked
             new Item[] { 
                 new Weapon("Military Rifle", rifleType, 12),
                 new Ammo("Military Rifle Ammo", rifleType, 20) 
             });
 
-        // Room 3: Locked chest with shotgun (requires Silver Key)
-        Chest chest3 = new Chest("Iron Chest", new Point(7, 5), null, keyForDoor2.getId(), true,
+        // Room 3: Locked chest with shotgun (requires Iron Key from chest1)
+        Chest chest3 = new Chest("Iron Chest", new Point(7, 5), null, keyForChest3.getId(), true,
             new Item[] { 
                 new Weapon("Combat Shotgun", shotgunType, 15),
                 new Ammo("Shotgun Shells", shotgunType, 10),
-                new Bandage("Advanced Bandage", 3, 20) 
+                new Bandage("Advanced Bandage", 3, 20),
+                keyForDoor3, // IMPROVED: This chest has Golden Key for exit door (alternative to boss fight)
             });
 
-        // Room 4: Treasure chest (requires Golden Key from boss)
+        // Room 4: Treasure chest (requires Golden Key)
         Chest treasureChest = new Chest("Golden Chest", new Point(8, 8), null, keyForDoor3.getId(), true,
             new Item[] { 
                 new Weapon("Ultimate Weapon", "Ultimate", 30),
@@ -180,6 +187,10 @@ public class Main {
         System.out.println("- C: Chest");
         System.out.println("- #: Wall");
         System.out.println("\nGood luck!");
+
+        // --- ADDED: Display starter tip ---
+        System.out.println("\n** TIP: You start with the Bronze Key to unlock the door to Room 2.");
+        System.out.println("** Check your inventory with 'I' and look for the Wooden Chest in this room!");
 
         // --- Main game loop ---
         String input;
@@ -239,6 +250,15 @@ public class Main {
                                 System.out.println("Prepare for a difficult battle!");
                             }
                         }
+                        
+                        // IMPROVED: Show tips when entering new rooms
+                        if (current.getRoomNumber() == 2) {
+                            System.out.println("\n** TIP: Look for the Steel Chest. It's unlocked and has better weapons!");
+                            System.out.println("** The door to Room 3 can be opened with your crowbar.");
+                        } else if (current.getRoomNumber() == 3) {
+                            System.out.println("\n** TIP: There's an Iron Chest here that needs a key.");
+                            System.out.println("** Find or defeat the Undead enemy to get the Silver Key to Room 4.");
+                        }
                     }
                     break;
                     
@@ -259,6 +279,12 @@ public class Main {
                     if (!confirm.startsWith("Y")) {
                         input = "";  // Don't quit if not confirmed
                     }
+                    break;
+                
+                // IMPROVED: Added heal command
+                case 'b':
+                    // Use bandage to heal
+                    handleHealing(player);
                     break;
                     
                 default:
@@ -315,8 +341,19 @@ public class Main {
             
             // Remove dead mob from room
             if (target.getHealth() <= 0) {
+                // IMPROVED: Show what the player got from defeating the enemy
+                System.out.println("\nThe " + target.getName() + " has been defeated!");
+                Item[] loot = ((Mob)target).getInventory();
+                if (loot != null && loot.length > 0) {
+                    System.out.println("You found:");
+                    for (Item item : loot) {
+                        if (item != null) {
+                            System.out.println("- " + item.getName());
+                        }
+                    }
+                    player.loot((Mob)target);
+                }
                 current.removeEntity(target);
-                System.out.println("\nThe enemy has been defeated!");
             }
         } else {
             System.out.println("No enemies within attack range!");
@@ -410,13 +447,13 @@ public class Main {
             // Loot the chest
             Item[] loot = chest.getInventory();
             if (loot != null && loot.length > 0) {
-                player.loot(chest);
                 System.out.println("You opened the chest and found:");
                 for (Item item : loot) {
                     if (item != null) {
                         System.out.println("- " + item.getName());
                     }
                 }
+                player.loot(chest);
             } else {
                 System.out.println("The chest is empty.");
             }
@@ -495,6 +532,35 @@ public class Main {
         }
         
         return current;
+    }
+
+    /**
+     * IMPROVED: Added method to handle healing
+     */
+    private static void handleHealing(Player player) {
+        Item[] inventory = player.getInventory();
+        Bandage bestBandage = null;
+        
+        // Find the best bandage in inventory
+        for (Item item : inventory) {
+            if (item instanceof Bandage) {
+                Bandage bandage = (Bandage) item;
+                if (bestBandage == null || bandage.getHealingAmount() > bestBandage.getHealingAmount()) {
+                    bestBandage = bandage;
+                }
+            }
+        }
+        
+        if (bestBandage != null) {
+            int healthBefore = player.getHealth();
+            player.heal(bestBandage);
+            bestBandage.useBandage(1); // Use the bandage
+            System.out.println("You used " + bestBandage.getName() + " and healed " + 
+                              (player.getHealth() - healthBefore) + " health points.");
+            System.out.println("Current health: " + player.getHealth());
+        } else {
+            System.out.println("You don't have any bandages to heal yourself!");
+        }
     }
 
     /**
@@ -598,6 +664,7 @@ public class Main {
         System.out.println("- W/A/S/D: Move up/left/down/right");
         System.out.println("- O: Open doors or chests");
         System.out.println("- F: Fight nearby enemies");
+        System.out.println("- B: Use bandage to heal yourself"); // IMPROVED: Added healing control
         System.out.println("- I: View inventory");
         System.out.println("- H: Show this help");
         System.out.println("- Q: Quit game");
@@ -611,11 +678,11 @@ public class Main {
         System.out.println("- #: Wall");
         
         System.out.println("\nGame Tips:");
-        System.out.println("- Defeat enemies to get keys and items");
-        System.out.println("- Use keys or a crowbar to open locked doors and chests");
-        System.out.println("- Find better weapons and ammo to defeat stronger enemies");
-        System.out.println("- Use bandages to heal when your health is low");
-        System.out.println("- The final boss guards the exit key");
+        System.out.println("- You already have the Bronze Key to unlock the door to Room 2");
+        System.out.println("- Open the wooden chest in Room 1 to get the Iron Key");
+        System.out.println("- The door to Room 3 can be opened with your crowbar");
+        System.out.println("- Defeat the final boss in Room 4 to escape");
+        System.out.println("- Doors are easier to open in this version");
     }
 
     /**
