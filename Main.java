@@ -6,6 +6,7 @@ import java.util.UUID;
 import entities.Player;
 import entities.Entity;
 import entities.Mob;
+import entities.Boss;
 import util.Pair;
 import util.Point;
 import world.Chest;
@@ -23,260 +24,603 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // --- set up player, mobs, doors, chests, rooms as before ---
+        // --- Initialize player with inventory ---
         Player player = new Player("Hero", 100, new Item[150], new Point(3, 4), null, 10);
-        // Mob goblin = new Mob("Goblin", 50, new Item[0], new Point(2, 2), null, 5);
-        String firstType = "Pistol";
-        String secondType = "Super Puper Pushka";
-        Bandage bandage = new Bandage("Basic Bandage", 5, 15);
-        Ammo ammo = new Ammo("Pistol Ammo", firstType, 10);
-        Weapon weapon = new Weapon("My Pistol", firstType, 5);
-        Ammo secondAmmo = new Ammo("Super Puper Pushka Ammo", secondType, 30);
-        Weapon superWeapon = new Weapon("My Super Puper Pushka", secondType, 13);
-        Crowbar crowbar = new Crowbar("Crowbar");
+        
+        // Create weapons and ammo
+        String pistolType = "Pistol";
+        String rifleType = "Rifle";
+        String shotgunType = "Shotgun";
+        
+        // Create initial items
+        Bandage basicBandage = new Bandage("Basic Bandage", 5, 15);
+        Ammo pistolAmmo = new Ammo("Pistol Ammo", pistolType, 10);
+        Weapon pistol = new Weapon("Basic Pistol", pistolType, 5);
+        Crowbar crowbar = new Crowbar("Rusty Crowbar");
 
-        Key keyForDoor1 = new Key("Key for Door 1");
-        Key keyForDoor2 = new Key("Key for Door 2");
+        // Keys for doors
+        Key keyForDoor1 = new Key("Bronze Key");
+        Key keyForDoor2 = new Key("Silver Key");
+        Key keyForDoor3 = new Key("Golden Key");
 
-        Item[] inventory = new Item[] {
-            bandage,
-            ammo,
-            weapon,
-            secondAmmo,
-            superWeapon,
+        // Set player's starting inventory
+        Item[] playerInventory = new Item[] {
+            basicBandage,
+            pistolAmmo,
+            pistol,
             crowbar,
-            keyForDoor1,
-            keyForDoor2
         };
 
-        player.setInventory(inventory);
-        player.setCurrentWeapon(superWeapon);
+        player.setInventory(playerInventory);
+        player.setCurrentWeapon(pistol);
 
-        Mob goblin = new Mob("Goblin", 50, new Item[1], new Point(2, 2), null, 5);
-        Weapon goblinWeapon = new Weapon("New Pistol", "Pistol", 5);
-        goblin.setInventory(new Item[] {
-            goblinWeapon,
+        // --- Create mobs ---
+        // Room 1: Weak goblin
+        Mob goblin = new Mob("Goblin", 30, new Item[1], new Point(2, 2), null, 5);
+        Ammo goblinAmmo = new Ammo("Goblin's Pistol Ammo", pistolType, 5);
+        goblin.setInventory(new Item[] { goblinAmmo, keyForDoor1 });
+
+        // Room 2: Stronger orc
+        Mob orc = new Mob("Orc", 50, new Item[2], new Point(5, 5), null, 7);
+        Weapon orcWeapon = new Weapon("Orc's Rifle", rifleType, 8);
+        Ammo orcAmmo = new Ammo("Rifle Ammo", rifleType, 15);
+        orc.setInventory(new Item[] { orcWeapon, orcAmmo });
+
+        // Room 3: Two zombies
+        Mob zombie1 = new Mob("Zombie", 40, new Item[1], new Point(2, 3), null, 6);
+        Mob zombie2 = new Mob("Undead", 35, new Item[1], new Point(5, 2), null, 6);
+        zombie1.setInventory(new Item[] { new Bandage("Bloodied Bandage", 2, 10) });
+        zombie2.setInventory(new Item[] { keyForDoor2 });
+
+        // Room 4: Final boss
+        Boss finalBoss = new Boss("Dungeon Lord", 120, new Item[3], new Point(5, 5), null, 15);
+        Weapon bossWeapon = new Weapon("Legendary Shotgun", shotgunType, 20);
+        Ammo bossAmmo = new Ammo("Shotgun Shells", shotgunType, 8);
+        finalBoss.setInventory(new Item[] { 
+            bossWeapon, 
+            bossAmmo, 
+            keyForDoor3, 
+            new Bandage("Advanced Medkit", 3, 25) 
         });
 
-        UUID door1Id = UUID.randomUUID();
+        // --- Create doors between rooms ---
+        // Door 1: Room 1 to Room 2 (requires Bronze Key)
+        UUID door1Id = keyForDoor1.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d1ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{ new Pair<>(1, new Point(0,3)), new Pair<>(3, new Point(6,3)) };
+            new Pair<?,?>[]{ new Pair<>(1, new Point(9, 4)), new Pair<>(2, new Point(0, 4)) };
         Door door1 = new Door(door1Id, d1ends, true, false);
 
+        // Door 2: Room 2 to Room 3 (requires Silver Key)
         UUID door2Id = keyForDoor2.getId();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d2ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{ new Pair<>(1, new Point(9,2)), new Pair<>(2, new Point(1,0)) };
+            new Pair<?,?>[]{ new Pair<>(2, new Point(9, 2)), new Pair<>(3, new Point(0, 2)) };
         Door door2 = new Door(door2Id, d2ends, true, false);
 
-        // New doors for rooms 2-3 and 3-4
-        UUID door3Id = keyForDoor1.getId();
+        // Door 3: Room 3 to Room 4 (can be unlocked with crowbar)
+        UUID door3Id = UUID.randomUUID();
         @SuppressWarnings("unchecked")
         Pair<Integer,Point>[] d3ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{
-                new Pair<>(2, new Point(3, 9)), // Room 2 right border
-                new Pair<>(3, new Point(3, 0))  // Room 3 left border
-            };
-        Door door3 = new Door(door3Id, d3ends, true, false);
+            new Pair<?,?>[]{ new Pair<>(3, new Point(5, 9)), new Pair<>(4, new Point(5, 0)) };
+        Door door3 = new Door(door3Id, d3ends, true, true);
 
-        UUID door4Id = UUID.randomUUID();
+        // Secret exit door (requires Golden Key from boss)
+        UUID exitDoorId = keyForDoor3.getId();
         @SuppressWarnings("unchecked")
-        Pair<Integer,Point>[] d4ends = (Pair<Integer,Point>[])
-            new Pair<?,?>[]{
-                new Pair<>(3, new Point(6, 5)), // Room 3 bottom border
-                new Pair<>(4, new Point(0, 5))  // Room 4 top border
-            };
-        Door door4 = new Door(door4Id, d4ends, false, true);
+        Pair<Integer,Point>[] exitEnds = (Pair<Integer,Point>[])
+            new Pair<?,?>[]{ new Pair<>(4, new Point(9, 5)), new Pair<>(0, new Point(0, 0)) };
+        Door exitDoor = new Door(exitDoorId, exitEnds, true, false);
 
-        Chest chest1 = new Chest("Gold",   new Point(3,2), null, keyForDoor1.getId(), true,  new Item[0]);
-        Chest chest2 = new Chest("Potion", new Point(5,5), null, UUID.randomUUID(), false, new Item[0]);
+        // --- Create chests ---
+        // Room 1: Unlocked chest with basic supplies
+        Chest chest1 = new Chest("Wooden Chest", new Point(7, 2), null, UUID.randomUUID(), false, 
+            new Item[] { 
+                new Bandage("Extra Bandage", 2, 15),
+                new Ammo("Extra Pistol Ammo", pistolType, 8) 
+            });
 
-        Room room1 = new Room(1, new Door[]{door1, door2}, new Chest[]{chest1}, new Entity[]{player, goblin});
-        Room room2 = new Room(2, new Door[]{door2, door3}, new Chest[]{chest2}, new Entity[]{});
-        Room room3 = new Room(3, new Door[]{door3, door4}, new Chest[]{}, new Entity[]{});
-        Room room4 = new Room(4, new Door[]{door4}, new Chest[]{}, new Entity[]{});
+        // Room 2: Locked chest with rifle (requires Bronze Key)
+        Chest chest2 = new Chest("Steel Chest", new Point(3, 7), null, keyForDoor1.getId(), true,
+            new Item[] { 
+                new Weapon("Military Rifle", rifleType, 12),
+                new Ammo("Military Rifle Ammo", rifleType, 20) 
+            });
+
+        // Room 3: Locked chest with shotgun (requires Silver Key)
+        Chest chest3 = new Chest("Iron Chest", new Point(7, 5), null, keyForDoor2.getId(), true,
+            new Item[] { 
+                new Weapon("Combat Shotgun", shotgunType, 15),
+                new Ammo("Shotgun Shells", shotgunType, 10),
+                new Bandage("Advanced Bandage", 3, 20) 
+            });
+
+        // Room 4: Treasure chest (requires Golden Key from boss)
+        Chest treasureChest = new Chest("Golden Chest", new Point(8, 8), null, keyForDoor3.getId(), true,
+            new Item[] { 
+                new Weapon("Ultimate Weapon", "Ultimate", 30),
+                new Ammo("Ultimate Ammo", "Ultimate", 50),
+                new Bandage("Ultimate Medkit", 5, 50) 
+            });
+
+        // --- Create rooms and populate with entities ---
+        Room room1 = new Room(1, new Door[]{door1}, new Chest[]{chest1}, new Entity[]{player, goblin});
+        Room room2 = new Room(2, new Door[]{door1, door2}, new Chest[]{chest2}, new Entity[]{orc});
+        Room room3 = new Room(3, new Door[]{door2, door3}, new Chest[]{chest3}, new Entity[]{zombie1, zombie2});
+        Room room4 = new Room(4, new Door[]{door3, exitDoor}, new Chest[]{treasureChest}, new Entity[]{finalBoss});
 
         Map<Integer,Room> dungeon = new HashMap<>();
         dungeon.put(1, room1);
         dungeon.put(2, room2);
         dungeon.put(3, room3);
         dungeon.put(4, room4);
+        dungeon.put(0, new Room(0, new Door[]{}, new Chest[]{}, new Entity[]{})); // Exit "room"
 
-        // start in room 1
+        // Start in room 1
         Room current = dungeon.get(1);
         player.setPlayerLocation(current);
-        current.addEntity(player);
 
-        System.out.println("5x8 Grid Player Movement");
-        System.out.println("Use WASD to move, O to open doors, F to Fight, Q to quit");
+        // --- Game introduction ---
+        System.out.println("╔══════════════════════════════════════════════════════╗");
+        System.out.println("║                   DUNGEON CRAWLER                    ║");
+        System.out.println("╚══════════════════════════════════════════════════════╝");
+        System.out.println("You wake up in a dimly lit dungeon. Can you escape?");
+        System.out.println("\nControls:");
+        System.out.println("- W/A/S/D: Move up/left/down/right");
+        System.out.println("- O: Open doors or chests");
+        System.out.println("- F: Fight nearby enemies");
+        System.out.println("- I: View inventory");
+        System.out.println("- H: Help/controls");
+        System.out.println("- Q: Quit game");
+        System.out.println("\nLegend:");
+        System.out.println("- @: You");
+        System.out.println("- m: Monster");
+        System.out.println("- B: Boss");
+        System.out.println("- D: Door");
+        System.out.println("- C: Chest");
+        System.out.println("- #: Wall");
+        System.out.println("\nGood luck!");
 
-        // --- main loop ---
- 
+        // --- Main game loop ---
         String input;
+        boolean gameCompleted = false;
+        
         do {
             current.updateEntityPositions();
+            System.out.println("\n=== Room " + current.getRoomNumber() + " ===");
             printGrid(current.getGrid());
+            
+            if (current.getRoomNumber() == 0) {
+                System.out.println("\nCongratulations! You've escaped the dungeon!");
+                gameCompleted = true;
+                break;
+            }
 
-            System.out.print("Enter move (W/A/S/D), Open (O), Fight (F), Quit (Q): ");
+            System.out.print("\nEnter action (W/A/S/D/O/F/I/H/Q): ");
             input = scanner.nextLine().trim();
             if (input.isEmpty()) continue;
 
-            char dir = Character.toLowerCase(input.charAt(0));
+            char action = Character.toLowerCase(input.charAt(0));
 
-            // 1) Try to move
-            boolean moved = false;
-            if ("wasd".indexOf(dir) >= 0) {
-                moved = player.move(dir, current);
+            switch (action) {
+                case 'w': case 'a': case 's': case 'd':
+                    // Movement
+                    if (!player.move(action, current)) {
+                        System.out.println("Can't move in that direction!");
+                    }
+                    break;
+                    
+                case 'f':
+                    // Fight sequence
+                    handleFight(player, current);
+                    break;
+                    
+                case 'o':
+                    // Open doors/chests
+                    Room newRoom = handleOpenAction(player, current, dungeon);
+                    if (newRoom != null && newRoom != current) {
+                        current = newRoom;
+                        
+                        // Check if this is the boss room and first entry
+                        if (current.getRoomNumber() == 4) {
+                            Boss boss = null;
+                            for (Entity entity : current.getEntities()) {
+                                if (entity instanceof Boss) {
+                                    boss = (Boss) entity;
+                                    break;
+                                }
+                            }
+                            
+                            if (boss != null && boss.getHealth() > 0) {
+                                System.out.println("\n▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+                                System.out.println("       WARNING: YOU'VE ENTERED THE BOSS ROOM!       ");
+                                System.out.println("▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓");
+                                System.out.println("\nThe " + boss.getName() + " approaches you menacingly!");
+                                System.out.println("Prepare for a difficult battle!");
+                            }
+                        }
+                    }
+                    break;
+                    
+                case 'i':
+                    // Show inventory
+                    displayInventory(player);
+                    break;
+                    
+                case 'h':
+                    // Show help
+                    displayHelp();
+                    break;
+                    
+                case 'q':
+                    // Quit game
+                    System.out.println("Are you sure you want to quit? (Y/N)");
+                    String confirm = scanner.nextLine().trim().toUpperCase();
+                    if (!confirm.startsWith("Y")) {
+                        input = "";  // Don't quit if not confirmed
+                    }
+                    break;
+                    
+                default:
+                    System.out.println("Unknown command. Type 'H' for help.");
+                    break;
             }
             
-
-            // 2) If move failed or was not a direction, check other actions
-            if (dir == 'f') {
-                String surroundings = player.checkPlayerSurroundings(current);
-                if(surroundings.contains("m")) {  // Check if 'm' is present anywhere in the string
-                    // Find the actual nearby mob (not just using 'goblin')
-                    Mob target = null;
-                    for (Entity entity : current.getEntities()) {
-                        if (entity instanceof Mob) {
-                            Point mobPos = entity.getPosition();
-                            Point playerPos = player.getPlayerPosition();
-                            int dx = Math.abs(playerPos.getX() - mobPos.getX());
-                            int dy = Math.abs(playerPos.getY() - mobPos.getY());
-                            
-                            if (dx <= 1 && dy <= 1 && entity.getHealth() > 0) {
-                                target = (Mob) entity;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (target != null) {
-                        FightSequence fight = new FightSequence(player, target);
-                        fight.startCombatLoop();
-                        
-                        // Remove dead mob from room
-                        if (target.getHealth() <= 0) {
-                            current.removeEntity(target);
-                        }
-                    }
-                } else {
-                    System.out.println("No mob nearby to fight!");
-                }
+            // Check if player died
+            if (player.getHealth() <= 0) {
+                System.out.println("\n☠️ You have been defeated! Game over! ☠️");
+                break;
             }
-            else if (dir == 'o') {
-                String surroundings = player.checkPlayerSurroundings(current);
-                boolean actionDone = false;
+            
+        } while (!input.equalsIgnoreCase("q") && !gameCompleted);
 
-                // do we have a chest or a door nearby?
-                if (surroundings.contains("c") || surroundings.contains("d")) {
-
-                    // 1) Try chest first (if any)
-                    if (surroundings.contains("c")) {
-                        Chest targetChest = null;
-                        for (Chest chest : current.getChests()) {
-                            Point chestPos = chest.getPosition();
-                            Point playerPos = player.getPlayerPosition();
-                            int dx = Math.abs(playerPos.getX() - chestPos.getX());
-                            int dy = Math.abs(playerPos.getY() - chestPos.getY());
-                            if (dx <= 1 && dy <= 1) {
-                                targetChest = chest;
-                                break;
-                            }
-                        }
-
-                        if (targetChest != null) {
-                            // open() will unlock if you have the right key (or crowbar, assuming you extend open())
-                            if (player.open(targetChest)) {
-                                player.loot(targetChest);
-                                System.out.println("You opened and looted the chest!");
-                            } else {
-                                System.out.println("The chest is locked and you have no way to open it.");
-                            }
-                            actionDone = true;
-                        }
-                    }
-
-                    // 2) If no chest action (or it failed), try doors
-                    // --- inside your 'O' handler in Main.java ---
-                    if (!actionDone && surroundings.contains("d")) {
-                        boolean doorOpened = false;
-                        for (Door door : current.getDoors()) {
-                            Point doorPos   = door.getPositionByRoomNumber(current.getRoomNumber());
-                            Point playerPos = player.getPlayerPosition();
-                            if (Math.abs(playerPos.getX() - doorPos.getX()) > 1 ||
-                                Math.abs(playerPos.getY() - doorPos.getY()) > 1) {
-                                continue;
-                            }
-
-                            // 1) Try to open (key / crowbar)
-                            if (door.isLocked()) {
-                                UUID keyId = player.findKeyForDoor(door);
-                                if (keyId != null) {
-                                    door.unlockWithKey(keyId);
-                                    System.out.println("You used the key to unlock the door.");
-                                }
-                                else if (door.canBeUnlockedByCrowbar() && player.hasCrowbar()) {
-                                    door.unlockWithCrowbar();
-                                    System.out.println("You pried the door open with your crowbar.");
-                                }
-                                else {
-                                    System.out.println("The door is locked. You need the right key or a crowbar.");
-                                    actionDone = true;
-                                    break;
-                                }
-                            }
-
-                            // 2) Door is now unlocked → find the other side
-                            Pair<Integer,Point> exit = null;
-                            for (Pair<Integer,Point> end : door.getRoomsAndPositions()) {
-                                if (!end.getLeft().equals(current.getRoomNumber())) {
-                                    exit = end;
-                                    break;
-                                }
-                            }
-
-                            // 3) Move player into the new room
-                            if (exit != null) {
-                                Room next   = dungeon.get(exit.getLeft());
-                                Point dest  = exit.getRight();
-                                player.moveToNewRoom(next, dest);
-                                current = next;
-                                System.out.println("Entered room " + current.getRoomNumber());
-                                doorOpened = true;
-                                actionDone  = true;
-                                break;
-                            }
-                        }
-
-                        if (!doorOpened) {
-                            System.out.println("You can't open any nearby door.");
-                            actionDone = true;
-                        }
-                    }
-
-
-                    // 3) Neither chest nor door could be opened
-                    if (!actionDone) {
-                        System.out.println("Nothing here you can open.");
-                    }
-
-                } else {
-                    System.out.println("No door or chest nearby to open!");
-                }
-            }
-
-            else if (!moved) {
-                // neither moved nor attacked nor opened
-                System.out.println("Can't move beyond grid boundaries!");
-            }
-
-        } while (!input.equalsIgnoreCase("q"));
-
+        if (gameCompleted) {
+            System.out.println("\n🏆 You've completed the game! 🏆");
+            System.out.println("You defeated the Dungeon Lord and escaped with your life and treasures!");
+        }
+        
         scanner.close();
-        System.out.println("Game exited!");
+        System.out.println("\nGame ended. Thanks for playing!");
     }
 
+    /**
+     * Handles the fight action when player presses 'F'
+     */
+    private static void handleFight(Player player, Room current) {
+        String surroundings = player.checkPlayerSurroundings(current);
+        if (!surroundings.contains("m") && !surroundings.contains("B")) {
+            System.out.println("No enemies nearby to fight!");
+            return;
+        }
+        
+        // Find the actual nearby enemy
+        Entity target = null;
+        for (Entity entity : current.getEntities()) {
+            if (entity instanceof Mob && entity.getHealth() > 0) {
+                Point mobPos = entity.getPosition();
+                Point playerPos = player.getPlayerPosition();
+                int dx = Math.abs(playerPos.getX() - mobPos.getX());
+                int dy = Math.abs(playerPos.getY() - mobPos.getY());
+                
+                if (dx <= 1 && dy <= 1) {
+                    target = entity;
+                    break;
+                }
+            }
+        }
+        
+        if (target != null) {
+            FightSequence fight = new FightSequence(player, (Mob)target);
+            fight.startCombatLoop();
+            
+            // Remove dead mob from room
+            if (target.getHealth() <= 0) {
+                current.removeEntity(target);
+                System.out.println("\nThe enemy has been defeated!");
+            }
+        } else {
+            System.out.println("No enemies within attack range!");
+        }
+    }
+
+    /**
+     * Handles opening doors and chests when player presses 'O'
+     * Returns the new room if player moved, otherwise returns the current room
+     */
+    private static Room handleOpenAction(Player player, Room current, Map<Integer, Room> dungeon) {
+        String surroundings = player.checkPlayerSurroundings(current);
+        boolean actionPerformed = false;
+
+        // Check for nearby chests or doors
+        if (surroundings.contains("c") || surroundings.contains("d")) {
+            // Try to open chest first
+            if (surroundings.contains("c")) {
+                Chest targetChest = findNearbyChest(player, current);
+                
+                if (targetChest != null) {
+                    handleChestInteraction(player, targetChest);
+                    actionPerformed = true;
+                }
+            }
+
+            // If no chest was opened, try doors
+            if (!actionPerformed && surroundings.contains("d")) {
+                Door targetDoor = findNearbyDoor(player, current);
+                
+                if (targetDoor != null) {
+                    Room newRoom = handleDoorInteraction(player, targetDoor, current, dungeon);
+                    if (newRoom != null && newRoom != current) {
+                        return newRoom; // Player moved to new room
+                    }
+                    actionPerformed = true;
+                }
+            }
+
+            // If no action was performed
+            if (!actionPerformed) {
+                System.out.println("Nothing here you can open.");
+            }
+        } else {
+            System.out.println("No door or chest nearby to open!");
+        }
+        
+        return current; // No room change
+    }
+
+    /**
+     * Finds a chest near the player
+     */
+    private static Chest findNearbyChest(Player player, Room current) {
+        for (Chest chest : current.getChests()) {
+            Point chestPos = chest.getPosition();
+            Point playerPos = player.getPlayerPosition();
+            int dx = Math.abs(playerPos.getX() - chestPos.getX());
+            int dy = Math.abs(playerPos.getY() - chestPos.getY());
+            
+            if (dx <= 1 && dy <= 1) {
+                return chest;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Handles opening a chest with a key or crowbar and looting it
+     */
+    private static void handleChestInteraction(Player player, Chest chest) {
+        if (chest.isLocked()) {
+            System.out.println("This chest is locked.");
+            
+            // Try to find the key for this chest
+            UUID keyId = player.findKeyForChest(chest);
+            
+            if (keyId != null) {
+                chest.unlockChest(keyId);
+                System.out.println("You used a key to unlock the chest!");
+            } 
+            // Try using crowbar if player has one
+            else if (player.hasCrowbar() && chest.isLocked()) {
+                chest.unlockChest(null); // Unlock without a key (crowbar)
+                System.out.println("You forced the chest open with your crowbar!");
+            }
+        }
+        
+        // If chest is now unlocked (or was already unlocked)
+        if (!chest.isLocked()) {
+            // Loot the chest
+            Item[] loot = chest.getInventory();
+            if (loot != null && loot.length > 0) {
+                player.loot(chest);
+                System.out.println("You opened the chest and found:");
+                for (Item item : loot) {
+                    if (item != null) {
+                        System.out.println("- " + item.getName());
+                    }
+                }
+            } else {
+                System.out.println("The chest is empty.");
+            }
+        } else {
+            System.out.println("You couldn't find a way to open this chest.");
+        }
+    }
+
+    /**
+     * Finds a door near the player
+     */
+    private static Door findNearbyDoor(Player player, Room current) {
+        for (Door door : current.getDoors()) {
+            Point doorPos = door.getPositionByRoomNumber(current.getRoomNumber());
+            Point playerPos = player.getPlayerPosition();
+            
+            if (doorPos != null) {
+                int dx = Math.abs(playerPos.getX() - doorPos.getX());
+                int dy = Math.abs(playerPos.getY() - doorPos.getY());
+                
+                if (dx <= 1 && dy <= 1) {
+                    return door;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Handles opening a door with a key or crowbar and moving to a new room
+     * Returns the new room if successful
+     */
+    private static Room handleDoorInteraction(Player player, Door door, Room current, Map<Integer, Room> dungeon) {
+        // Try to unlock the door if it's locked
+        if (door.isLocked()) {
+            System.out.println("This door is locked.");
+            
+            // Try to find the key for this door
+            UUID keyId = player.findKeyForDoor(door);
+            
+            if (keyId != null) {
+                door.unlockWithKey(keyId);
+                System.out.println("You used a key to unlock the door!");
+            } 
+            // Try using crowbar if the door can be forced and player has one
+            else if (door.canBeUnlockedByCrowbar() && player.hasCrowbar()) {
+                door.unlockWithCrowbar();
+                System.out.println("You pried the door open with your crowbar!");
+            } else {
+                System.out.println("You don't have the right key or tools to open this door.");
+                return current;
+            }
+        }
+        
+        // If door is now unlocked (or was already unlocked)
+        if (!door.isLocked()) {
+            // Find the destination room and position
+            Pair<Integer, Point> destination = null;
+            for (Pair<Integer, Point> end : door.getRoomsAndPositions()) {
+                if (!end.getLeft().equals(current.getRoomNumber())) {
+                    destination = end;
+                    break;
+                }
+            }
+            
+            if (destination != null) {
+                Room nextRoom = dungeon.get(destination.getLeft());
+                Point destPoint = destination.getRight();
+                
+                if (nextRoom != null) {
+                    player.moveToNewRoom(nextRoom, destPoint);
+                    System.out.println("You pass through the door...");
+                    return nextRoom;
+                }
+            }
+        }
+        
+        return current;
+    }
+
+    /**
+     * Displays the player's inventory
+     */
+    private static void displayInventory(Player player) {
+        Item[] inventory = player.getInventory();
+        Weapon currentWeapon = player.getCurrentWeapon();
+        
+        System.out.println("\n=== INVENTORY ===");
+        System.out.println("Health: " + player.getHealth());
+        System.out.println("Current weapon: " + (currentWeapon != null ? currentWeapon.getName() : "Unarmed"));
+        
+        // Count items by type
+        int weaponCount = 0;
+        int ammoCount = 0;
+        int bandageCount = 0;
+        int keyCount = 0;
+        int otherCount = 0;
+        
+        // First, collect all non-null items
+        for (Item item : inventory) {
+            if (item != null) {
+                if (item instanceof Weapon) weaponCount++;
+                else if (item instanceof Ammo) ammoCount++;
+                else if (item instanceof Bandage) bandageCount++;
+                else if (item instanceof Key) keyCount++;
+                else otherCount++;
+            }
+        }
+        
+        // Display weapons
+        if (weaponCount > 0) {
+            System.out.println("\nWEAPONS:");
+            for (Item item : inventory) {
+                if (item instanceof Weapon) {
+                    Weapon weapon = (Weapon) item;
+                    Ammo ammo = player.getAmmoFromInventory(weapon.getType());
+                    String ammoInfo = ammo != null ? " (Ammo: " + ammo.getQuantity() + ")" : " (No ammo)";
+                    System.out.println("- " + weapon.getName() + " | Damage: " + weapon.getDamage() + ammoInfo);
+                }
+            }
+        }
+        
+        // Display ammo
+        if (ammoCount > 0) {
+            System.out.println("\nAMMO:");
+            for (Item item : inventory) {
+                if (item instanceof Ammo) {
+                    Ammo ammo = (Ammo) item;
+                    System.out.println("- " + ammo.getName() + " | Type: " + ammo.getWeaponType() + 
+                                      " | Quantity: " + ammo.getQuantity());
+                }
+            }
+        }
+        
+        // Display bandages
+        if (bandageCount > 0) {
+            System.out.println("\nMEDICAL:");
+            for (Item item : inventory) {
+                if (item instanceof Bandage) {
+                    Bandage bandage = (Bandage) item;
+                    System.out.println("- " + bandage.getName() + " | Healing: " + bandage.getHealingAmount() + 
+                                      " | Quantity: " + bandage.getQuantity());
+                }
+            }
+        }
+        
+        // Display keys
+        if (keyCount > 0) {
+            System.out.println("\nKEYS:");
+            for (Item item : inventory) {
+                if (item instanceof Key) {
+                    System.out.println("- " + item.getName());
+                }
+            }
+        }
+        
+        // Display other items
+        if (otherCount > 0) {
+            System.out.println("\nOTHER ITEMS:");
+            for (Item item : inventory) {
+                if (item != null && !(item instanceof Weapon) && !(item instanceof Ammo) && 
+                    !(item instanceof Bandage) && !(item instanceof Key)) {
+                    System.out.println("- " + item.getName());
+                }
+            }
+        }
+        
+        if (weaponCount + ammoCount + bandageCount + keyCount + otherCount == 0) {
+            System.out.println("Your inventory is empty!");
+        }
+    }
+
+    /**
+     * Displays help information
+     */
+    private static void displayHelp() {
+        System.out.println("\n=== HELP ===");
+        System.out.println("Controls:");
+        System.out.println("- W/A/S/D: Move up/left/down/right");
+        System.out.println("- O: Open doors or chests");
+        System.out.println("- F: Fight nearby enemies");
+        System.out.println("- I: View inventory");
+        System.out.println("- H: Show this help");
+        System.out.println("- Q: Quit game");
+        
+        System.out.println("\nLegend:");
+        System.out.println("- @: You (player)");
+        System.out.println("- m: Monster/enemy");
+        System.out.println("- B: Boss");
+        System.out.println("- D: Door");
+        System.out.println("- C: Chest");
+        System.out.println("- #: Wall");
+        
+        System.out.println("\nGame Tips:");
+        System.out.println("- Defeat enemies to get keys and items");
+        System.out.println("- Use keys or a crowbar to open locked doors and chests");
+        System.out.println("- Find better weapons and ammo to defeat stronger enemies");
+        System.out.println("- Use bandages to heal when your health is low");
+        System.out.println("- The final boss guards the exit key");
+    }
+
+    /**
+     * Prints the room grid
+     */
     private static void printGrid(char[][] grid) {
         for (char[] row : grid) {
             for (char c : row) System.out.print(c + " ");
