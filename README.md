@@ -6,6 +6,8 @@ The whole game runs in the terminal. No external libraries, no build tools — j
 
 Built as a practical project for the **Object Oriented Programming 1 (OOP1)** course — see [Course context](#course-context) below.
 
+**Authors:** [Dmitriy Kuramshin](https://github.com/Krmsh1n5) · [Kamal Yalchin](https://github.com/Camrado) · [Toghrul Mardiyev](https://github.com/AcidDrop0) · [Luis Markus Torres](https://github.com/LuisMarkusTorres) 
+
 ## Features
 
 - **Grid-based movement** across four connected rooms rendered as an ASCII map.
